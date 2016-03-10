@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		155CEC601C9207C3006F86DB /* cpu_protections.c in Sources */ = {isa = PBXBuildFile; fileRef = 155CEC571C9207C3006F86DB /* cpu_protections.c */; };
+		155CEC611C9207C3006F86DB /* cpu_protections.h in Headers */ = {isa = PBXBuildFile; fileRef = 155CEC581C9207C3006F86DB /* cpu_protections.h */; };
+		155CEC641C9207C3006F86DB /* proc.h in Headers */ = {isa = PBXBuildFile; fileRef = 155CEC5B1C9207C3006F86DB /* proc.h */; };
+		155CEC661C9207C3006F86DB /* sysent.c in Sources */ = {isa = PBXBuildFile; fileRef = 155CEC5D1C9207C3006F86DB /* sysent.c */; };
+		155CEC671C9207C3006F86DB /* sysent.h in Headers */ = {isa = PBXBuildFile; fileRef = 155CEC5E1C9207C3006F86DB /* sysent.h */; };
+		155CEC6F1C920911006F86DB /* sys_hook.c in Sources */ = {isa = PBXBuildFile; fileRef = 155CEC6D1C920911006F86DB /* sys_hook.c */; };
+		155CEC701C920911006F86DB /* sys_hook.h in Headers */ = {isa = PBXBuildFile; fileRef = 155CEC6E1C920911006F86DB /* sys_hook.h */; };
 		15724BC91C6609B0004DB0C0 /* kauth_controls.c in Sources */ = {isa = PBXBuildFile; fileRef = 15724BC71C6609B0004DB0C0 /* kauth_controls.c */; };
 		15724BCA1C6609B0004DB0C0 /* kauth_controls.h in Headers */ = {isa = PBXBuildFile; fileRef = 15724BC81C6609B0004DB0C0 /* kauth_controls.h */; };
 		15D705F31C5FC051000846DC /* definitions.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705E81C5FC051000846DC /* definitions.h */; };
@@ -23,6 +30,13 @@
 
 /* Begin PBXFileReference section */
 		15578ADB1C23F68300F447E9 /* ShellGuard.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShellGuard.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		155CEC571C9207C3006F86DB /* cpu_protections.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cpu_protections.c; path = kext/cpu_protections.c; sourceTree = SOURCE_ROOT; };
+		155CEC581C9207C3006F86DB /* cpu_protections.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cpu_protections.h; path = kext/cpu_protections.h; sourceTree = SOURCE_ROOT; };
+		155CEC5B1C9207C3006F86DB /* proc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = proc.h; path = kext/proc.h; sourceTree = SOURCE_ROOT; };
+		155CEC5D1C9207C3006F86DB /* sysent.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sysent.c; path = kext/sysent.c; sourceTree = SOURCE_ROOT; };
+		155CEC5E1C9207C3006F86DB /* sysent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sysent.h; path = kext/sysent.h; sourceTree = SOURCE_ROOT; };
+		155CEC6D1C920911006F86DB /* sys_hook.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sys_hook.c; sourceTree = "<group>"; };
+		155CEC6E1C920911006F86DB /* sys_hook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sys_hook.h; sourceTree = "<group>"; };
 		15724BC71C6609B0004DB0C0 /* kauth_controls.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = kauth_controls.c; path = kext/kauth_controls.c; sourceTree = SOURCE_ROOT; };
 		15724BC81C6609B0004DB0C0 /* kauth_controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kauth_controls.h; path = kext/kauth_controls.h; sourceTree = SOURCE_ROOT; };
 		15D705E81C5FC051000846DC /* definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = definitions.h; path = kext/definitions.h; sourceTree = SOURCE_ROOT; };
@@ -68,7 +82,10 @@
 		15578ADD1C23F68300F447E9 /* kext */ = {
 			isa = PBXGroup;
 			children = (
+				155CEC711C920AF3006F86DB /* get_sysent */,
 				15D705E91C5FC051000846DC /* shellguard.c */,
+				155CEC6D1C920911006F86DB /* sys_hook.c */,
+				155CEC6E1C920911006F86DB /* sys_hook.h */,
 				15D705EA1C5FC051000846DC /* shellguard.h */,
 				15724BC71C6609B0004DB0C0 /* kauth_controls.c */,
 				15724BC81C6609B0004DB0C0 /* kauth_controls.h */,
@@ -82,8 +99,19 @@
 				15D705F01C5FC051000846DC /* shared_data.h */,
 				15D705EB1C5FC051000846DC /* Info.plist */,
 			);
-			name = kext;
-			path = driver;
+			path = kext;
+			sourceTree = "<group>";
+		};
+		155CEC711C920AF3006F86DB /* get_sysent */ = {
+			isa = PBXGroup;
+			children = (
+				155CEC571C9207C3006F86DB /* cpu_protections.c */,
+				155CEC581C9207C3006F86DB /* cpu_protections.h */,
+				155CEC5B1C9207C3006F86DB /* proc.h */,
+				155CEC5D1C9207C3006F86DB /* sysent.c */,
+				155CEC5E1C9207C3006F86DB /* sysent.h */,
+			);
+			name = get_sysent;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -93,8 +121,12 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				155CEC671C9207C3006F86DB /* sysent.h in Headers */,
+				155CEC641C9207C3006F86DB /* proc.h in Headers */,
+				155CEC611C9207C3006F86DB /* cpu_protections.h in Headers */,
 				15D705FD1C5FC051000846DC /* string_ops.h in Headers */,
 				15D705F81C5FC051000846DC /* kext_control.h in Headers */,
+				155CEC701C920911006F86DB /* sys_hook.h in Headers */,
 				15D705FB1C5FC051000846DC /* shared_data.h in Headers */,
 				15D705F51C5FC051000846DC /* shellguard.h in Headers */,
 				15D705F31C5FC051000846DC /* definitions.h in Headers */,
@@ -171,10 +203,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				15D705F71C5FC051000846DC /* kext_control.c in Sources */,
+				155CEC6F1C920911006F86DB /* sys_hook.c in Sources */,
+				155CEC601C9207C3006F86DB /* cpu_protections.c in Sources */,
 				15724BC91C6609B0004DB0C0 /* kauth_controls.c in Sources */,
 				15D705F41C5FC051000846DC /* shellguard.c in Sources */,
 				15D705FC1C5FC051000846DC /* string_ops.c in Sources */,
 				15D705F91C5FC051000846DC /* rules.c in Sources */,
+				155CEC661C9207C3006F86DB /* sysent.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
