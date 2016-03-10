@@ -1,0 +1,319 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		15724BC91C6609B0004DB0C0 /* kauth_controls.c in Sources */ = {isa = PBXBuildFile; fileRef = 15724BC71C6609B0004DB0C0 /* kauth_controls.c */; };
+		15724BCA1C6609B0004DB0C0 /* kauth_controls.h in Headers */ = {isa = PBXBuildFile; fileRef = 15724BC81C6609B0004DB0C0 /* kauth_controls.h */; };
+		15D705F31C5FC051000846DC /* definitions.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705E81C5FC051000846DC /* definitions.h */; };
+		15D705F41C5FC051000846DC /* shellguard.c in Sources */ = {isa = PBXBuildFile; fileRef = 15D705E91C5FC051000846DC /* shellguard.c */; };
+		15D705F51C5FC051000846DC /* shellguard.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705EA1C5FC051000846DC /* shellguard.h */; };
+		15D705F71C5FC051000846DC /* kext_control.c in Sources */ = {isa = PBXBuildFile; fileRef = 15D705EC1C5FC051000846DC /* kext_control.c */; };
+		15D705F81C5FC051000846DC /* kext_control.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705ED1C5FC051000846DC /* kext_control.h */; };
+		15D705F91C5FC051000846DC /* rules.c in Sources */ = {isa = PBXBuildFile; fileRef = 15D705EE1C5FC051000846DC /* rules.c */; };
+		15D705FA1C5FC051000846DC /* rules.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705EF1C5FC051000846DC /* rules.h */; };
+		15D705FB1C5FC051000846DC /* shared_data.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705F01C5FC051000846DC /* shared_data.h */; };
+		15D705FC1C5FC051000846DC /* string_ops.c in Sources */ = {isa = PBXBuildFile; fileRef = 15D705F11C5FC051000846DC /* string_ops.c */; };
+		15D705FD1C5FC051000846DC /* string_ops.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705F21C5FC051000846DC /* string_ops.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		15578ADB1C23F68300F447E9 /* ShellGuard.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShellGuard.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		15724BC71C6609B0004DB0C0 /* kauth_controls.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = kauth_controls.c; path = kext/kauth_controls.c; sourceTree = SOURCE_ROOT; };
+		15724BC81C6609B0004DB0C0 /* kauth_controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kauth_controls.h; path = kext/kauth_controls.h; sourceTree = SOURCE_ROOT; };
+		15D705E81C5FC051000846DC /* definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = definitions.h; path = kext/definitions.h; sourceTree = SOURCE_ROOT; };
+		15D705E91C5FC051000846DC /* shellguard.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = shellguard.c; path = kext/shellguard.c; sourceTree = SOURCE_ROOT; };
+		15D705EA1C5FC051000846DC /* shellguard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shellguard.h; path = kext/shellguard.h; sourceTree = SOURCE_ROOT; };
+		15D705EB1C5FC051000846DC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = kext/Info.plist; sourceTree = SOURCE_ROOT; };
+		15D705EC1C5FC051000846DC /* kext_control.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = kext_control.c; path = kext/kext_control.c; sourceTree = SOURCE_ROOT; };
+		15D705ED1C5FC051000846DC /* kext_control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kext_control.h; path = kext/kext_control.h; sourceTree = SOURCE_ROOT; };
+		15D705EE1C5FC051000846DC /* rules.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rules.c; path = kext/rules.c; sourceTree = SOURCE_ROOT; };
+		15D705EF1C5FC051000846DC /* rules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rules.h; path = kext/rules.h; sourceTree = SOURCE_ROOT; };
+		15D705F01C5FC051000846DC /* shared_data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shared_data.h; path = kext/shared_data.h; sourceTree = SOURCE_ROOT; };
+		15D705F11C5FC051000846DC /* string_ops.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = string_ops.c; path = kext/string_ops.c; sourceTree = SOURCE_ROOT; };
+		15D705F21C5FC051000846DC /* string_ops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string_ops.h; path = kext/string_ops.h; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		15578AD71C23F68300F447E9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		15578AD11C23F68300F447E9 = {
+			isa = PBXGroup;
+			children = (
+				15578ADD1C23F68300F447E9 /* kext */,
+				15578ADC1C23F68300F447E9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		15578ADC1C23F68300F447E9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				15578ADB1C23F68300F447E9 /* ShellGuard.kext */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		15578ADD1C23F68300F447E9 /* kext */ = {
+			isa = PBXGroup;
+			children = (
+				15D705E91C5FC051000846DC /* shellguard.c */,
+				15D705EA1C5FC051000846DC /* shellguard.h */,
+				15724BC71C6609B0004DB0C0 /* kauth_controls.c */,
+				15724BC81C6609B0004DB0C0 /* kauth_controls.h */,
+				15D705EC1C5FC051000846DC /* kext_control.c */,
+				15D705ED1C5FC051000846DC /* kext_control.h */,
+				15D705EE1C5FC051000846DC /* rules.c */,
+				15D705EF1C5FC051000846DC /* rules.h */,
+				15D705F11C5FC051000846DC /* string_ops.c */,
+				15D705F21C5FC051000846DC /* string_ops.h */,
+				15D705E81C5FC051000846DC /* definitions.h */,
+				15D705F01C5FC051000846DC /* shared_data.h */,
+				15D705EB1C5FC051000846DC /* Info.plist */,
+			);
+			name = kext;
+			path = driver;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		15578AD81C23F68300F447E9 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				15D705FD1C5FC051000846DC /* string_ops.h in Headers */,
+				15D705F81C5FC051000846DC /* kext_control.h in Headers */,
+				15D705FB1C5FC051000846DC /* shared_data.h in Headers */,
+				15D705F51C5FC051000846DC /* shellguard.h in Headers */,
+				15D705F31C5FC051000846DC /* definitions.h in Headers */,
+				15D705FA1C5FC051000846DC /* rules.h in Headers */,
+				15724BCA1C6609B0004DB0C0 /* kauth_controls.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		15578ADA1C23F68300F447E9 /* ShellGuard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 15578AE31C23F68300F447E9 /* Build configuration list for PBXNativeTarget "ShellGuard" */;
+			buildPhases = (
+				15578AD61C23F68300F447E9 /* Sources */,
+				15578AD71C23F68300F447E9 /* Frameworks */,
+				15578AD81C23F68300F447E9 /* Headers */,
+				15578AD91C23F68300F447E9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShellGuard;
+			productName = driver;
+			productReference = 15578ADB1C23F68300F447E9 /* ShellGuard.kext */;
+			productType = "com.apple.product-type.kernel-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		15578AD21C23F68300F447E9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = vivami;
+				TargetAttributes = {
+					15578ADA1C23F68300F447E9 = {
+						CreatedOnToolsVersion = 7.2;
+					};
+				};
+			};
+			buildConfigurationList = 15578AD51C23F68300F447E9 /* Build configuration list for PBXProject "ShellGuard" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 15578AD11C23F68300F447E9;
+			productRefGroup = 15578ADC1C23F68300F447E9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				15578ADA1C23F68300F447E9 /* ShellGuard */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		15578AD91C23F68300F447E9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		15578AD61C23F68300F447E9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				15D705F71C5FC051000846DC /* kext_control.c in Sources */,
+				15724BC91C6609B0004DB0C0 /* kauth_controls.c in Sources */,
+				15D705F41C5FC051000846DC /* shellguard.c in Sources */,
+				15D705FC1C5FC051000846DC /* string_ops.c in Sources */,
+				15D705F91C5FC051000846DC /* rules.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		15578AE11C23F68300F447E9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		15578AE21C23F68300F447E9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer: Vincent Van Mieghem (352HXLRFA6)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		15578AE41C23F68300F447E9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				INFOPLIST_FILE = kext/Info.plist;
+				MODULE_NAME = com.vivami.cagekeeper;
+				MODULE_START = shellguard_start;
+				MODULE_STOP = shellguard_stop;
+				MODULE_VERSION = 1.0.0d1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.cagekeeper;
+				PRODUCT_NAME = ShellGuard;
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Debug;
+		};
+		15578AE51C23F68300F447E9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				INFOPLIST_FILE = kext/Info.plist;
+				MODULE_NAME = com.vivami.cagekeeper;
+				MODULE_START = shellguard_start;
+				MODULE_STOP = shellguard_stop;
+				MODULE_VERSION = 1.0.0d1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.cagekeeper;
+				PRODUCT_NAME = ShellGuard;
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		15578AD51C23F68300F447E9 /* Build configuration list for PBXProject "ShellGuard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				15578AE11C23F68300F447E9 /* Debug */,
+				15578AE21C23F68300F447E9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		15578AE31C23F68300F447E9 /* Build configuration list for PBXNativeTarget "ShellGuard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				15578AE41C23F68300F447E9 /* Debug */,
+				15578AE51C23F68300F447E9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 15578AD21C23F68300F447E9 /* Project object */;
+}

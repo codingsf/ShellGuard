@@ -1,0 +1,540 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		150739CC1C7B0D7D0019738B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 150739BE1C7B0D7D0019738B /* Assets.xcassets */; };
+		150739E91C7B14BE0019738B /* socket_operations.m in Sources */ = {isa = PBXBuildFile; fileRef = 150739C81C7B0D7D0019738B /* socket_operations.m */; };
+		150739EB1C7B14BE0019738B /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739CA1C7B0D7D0019738B /* SwiftyJSON.swift */; };
+		150739EC1C7B14BE0019738B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739BD1C7B0D7D0019738B /* AppDelegate.swift */; };
+		150739ED1C7B14BE0019738B /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739C91C7B0D7D0019738B /* StatusMenuController.swift */; };
+		150739EE1C7B14BE0019738B /* KextCommunicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739C21C7B0D7D0019738B /* KextCommunicator.swift */; };
+		150739EF1C7B14BE0019738B /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739C31C7B0D7D0019738B /* KeychainStore.swift */; };
+		150739F01C7B14BE0019738B /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739C41C7B0D7D0019738B /* Logger.swift */; };
+		150739F11C7B14BE0019738B /* RulesLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739C61C7B0D7D0019738B /* RulesLoader.swift */; };
+		150739F21C7B14BE0019738B /* Rule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739C51C7B0D7D0019738B /* Rule.swift */; };
+		58A9BC061C6B297D000B3AAD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 58A9BC041C6B297D000B3AAD /* MainMenu.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		58A9BC0D1C6B297D000B3AAD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 58A9BBF51C6B297D000B3AAD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 58A9BBFC1C6B297D000B3AAD;
+			remoteInfo = KevlarDaemon;
+		};
+		58A9BC181C6B297D000B3AAD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 58A9BBF51C6B297D000B3AAD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 58A9BBFC1C6B297D000B3AAD;
+			remoteInfo = KevlarDaemon;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		150739BD1C7B0D7D0019738B /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		150739BE1C7B0D7D0019738B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		150739C01C7B0D7D0019738B /* ShellGuardDaemon-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ShellGuardDaemon-Bridging-Header.h"; sourceTree = "<group>"; };
+		150739C11C7B0D7D0019738B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		150739C21C7B0D7D0019738B /* KextCommunicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KextCommunicator.swift; sourceTree = "<group>"; };
+		150739C31C7B0D7D0019738B /* KeychainStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		150739C41C7B0D7D0019738B /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		150739C51C7B0D7D0019738B /* Rule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rule.swift; sourceTree = "<group>"; };
+		150739C61C7B0D7D0019738B /* RulesLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RulesLoader.swift; sourceTree = "<group>"; };
+		150739C71C7B0D7D0019738B /* shared_data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shared_data.h; path = ../../kext/kext/shared_data.h; sourceTree = "<group>"; };
+		150739C81C7B0D7D0019738B /* socket_operations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = socket_operations.m; sourceTree = "<group>"; };
+		150739C91C7B0D7D0019738B /* StatusMenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusMenuController.swift; sourceTree = "<group>"; };
+		150739CA1C7B0D7D0019738B /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
+		58A9BBFD1C6B297D000B3AAD /* ShellGuardDaemon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShellGuardDaemon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		58A9BC051C6B297D000B3AAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		58A9BC0C1C6B297D000B3AAD /* ShellGuardDaemon.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShellGuardDaemon.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		58A9BC171C6B297D000B3AAD /* ShellGuardDaemon.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShellGuardDaemon.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		58A9BBFA1C6B297D000B3AAD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		58A9BC091C6B297D000B3AAD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		58A9BC141C6B297D000B3AAD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		153547761C6CA2E10069B3B6 /* SwiftyJSON */ = {
+			isa = PBXGroup;
+			children = (
+				150739CA1C7B0D7D0019738B /* SwiftyJSON.swift */,
+			);
+			name = SwiftyJSON;
+			sourceTree = "<group>";
+		};
+		153547771C6CA3040069B3B6 /* C-Bridging */ = {
+			isa = PBXGroup;
+			children = (
+				150739C01C7B0D7D0019738B /* ShellGuardDaemon-Bridging-Header.h */,
+				150739C71C7B0D7D0019738B /* shared_data.h */,
+				150739C81C7B0D7D0019738B /* socket_operations.m */,
+			);
+			name = "C-Bridging";
+			sourceTree = "<group>";
+		};
+		58A9BBF41C6B297D000B3AAD = {
+			isa = PBXGroup;
+			children = (
+				58A9BBFF1C6B297D000B3AAD /* ShellGuard */,
+				58A9BBFE1C6B297D000B3AAD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		58A9BBFE1C6B297D000B3AAD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				58A9BBFD1C6B297D000B3AAD /* ShellGuardDaemon.app */,
+				58A9BC0C1C6B297D000B3AAD /* ShellGuardDaemon.xctest */,
+				58A9BC171C6B297D000B3AAD /* ShellGuardDaemon.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		58A9BBFF1C6B297D000B3AAD /* ShellGuard */ = {
+			isa = PBXGroup;
+			children = (
+				153547771C6CA3040069B3B6 /* C-Bridging */,
+				153547761C6CA2E10069B3B6 /* SwiftyJSON */,
+				150739BD1C7B0D7D0019738B /* AppDelegate.swift */,
+				150739C91C7B0D7D0019738B /* StatusMenuController.swift */,
+				150739C21C7B0D7D0019738B /* KextCommunicator.swift */,
+				150739C31C7B0D7D0019738B /* KeychainStore.swift */,
+				150739C41C7B0D7D0019738B /* Logger.swift */,
+				150739C61C7B0D7D0019738B /* RulesLoader.swift */,
+				150739C51C7B0D7D0019738B /* Rule.swift */,
+				150739C11C7B0D7D0019738B /* Info.plist */,
+				150739BE1C7B0D7D0019738B /* Assets.xcassets */,
+				58A9BC041C6B297D000B3AAD /* MainMenu.xib */,
+			);
+			name = ShellGuard;
+			path = ShellGuardDaemon;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		58A9BBFC1C6B297D000B3AAD /* ShellGuardDaemon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58A9BC201C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardDaemon" */;
+			buildPhases = (
+				58A9BBF91C6B297D000B3AAD /* Sources */,
+				58A9BBFA1C6B297D000B3AAD /* Frameworks */,
+				58A9BBFB1C6B297D000B3AAD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShellGuardDaemon;
+			productName = CagekeeperDaemon;
+			productReference = 58A9BBFD1C6B297D000B3AAD /* ShellGuardDaemon.app */;
+			productType = "com.apple.product-type.application";
+		};
+		58A9BC0B1C6B297D000B3AAD /* ShellGuardDaemonTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58A9BC231C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardDaemonTests" */;
+			buildPhases = (
+				58A9BC081C6B297D000B3AAD /* Sources */,
+				58A9BC091C6B297D000B3AAD /* Frameworks */,
+				58A9BC0A1C6B297D000B3AAD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				58A9BC0E1C6B297D000B3AAD /* PBXTargetDependency */,
+			);
+			name = ShellGuardDaemonTests;
+			productName = KevlarDaemonTests;
+			productReference = 58A9BC0C1C6B297D000B3AAD /* ShellGuardDaemon.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		58A9BC161C6B297D000B3AAD /* ShellGuardDaemonUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58A9BC261C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardDaemonUITests" */;
+			buildPhases = (
+				58A9BC131C6B297D000B3AAD /* Sources */,
+				58A9BC141C6B297D000B3AAD /* Frameworks */,
+				58A9BC151C6B297D000B3AAD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				58A9BC191C6B297D000B3AAD /* PBXTargetDependency */,
+			);
+			name = ShellGuardDaemonUITests;
+			productName = KevlarDaemonUITests;
+			productReference = 58A9BC171C6B297D000B3AAD /* ShellGuardDaemon.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		58A9BBF51C6B297D000B3AAD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				KnownAssetTags = (
+					complain,
+					enforce,
+				);
+				LastSwiftUpdateCheck = 0720;
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = vivami;
+				TargetAttributes = {
+					58A9BBFC1C6B297D000B3AAD = {
+						CreatedOnToolsVersion = 7.2.1;
+						DevelopmentTeam = 4GY79867VV;
+					};
+					58A9BC0B1C6B297D000B3AAD = {
+						CreatedOnToolsVersion = 7.2.1;
+						TestTargetID = 58A9BBFC1C6B297D000B3AAD;
+					};
+					58A9BC161C6B297D000B3AAD = {
+						CreatedOnToolsVersion = 7.2.1;
+						TestTargetID = 58A9BBFC1C6B297D000B3AAD;
+					};
+				};
+			};
+			buildConfigurationList = 58A9BBF81C6B297D000B3AAD /* Build configuration list for PBXProject "ShellGuardDaemon" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 58A9BBF41C6B297D000B3AAD;
+			productRefGroup = 58A9BBFE1C6B297D000B3AAD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				58A9BBFC1C6B297D000B3AAD /* ShellGuardDaemon */,
+				58A9BC0B1C6B297D000B3AAD /* ShellGuardDaemonTests */,
+				58A9BC161C6B297D000B3AAD /* ShellGuardDaemonUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		58A9BBFB1C6B297D000B3AAD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				150739CC1C7B0D7D0019738B /* Assets.xcassets in Resources */,
+				58A9BC061C6B297D000B3AAD /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		58A9BC0A1C6B297D000B3AAD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		58A9BC151C6B297D000B3AAD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		58A9BBF91C6B297D000B3AAD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				150739E91C7B14BE0019738B /* socket_operations.m in Sources */,
+				150739EB1C7B14BE0019738B /* SwiftyJSON.swift in Sources */,
+				150739EC1C7B14BE0019738B /* AppDelegate.swift in Sources */,
+				150739ED1C7B14BE0019738B /* StatusMenuController.swift in Sources */,
+				150739EE1C7B14BE0019738B /* KextCommunicator.swift in Sources */,
+				150739EF1C7B14BE0019738B /* KeychainStore.swift in Sources */,
+				150739F01C7B14BE0019738B /* Logger.swift in Sources */,
+				150739F11C7B14BE0019738B /* RulesLoader.swift in Sources */,
+				150739F21C7B14BE0019738B /* Rule.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		58A9BC081C6B297D000B3AAD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		58A9BC131C6B297D000B3AAD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		58A9BC0E1C6B297D000B3AAD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 58A9BBFC1C6B297D000B3AAD /* ShellGuardDaemon */;
+			targetProxy = 58A9BC0D1C6B297D000B3AAD /* PBXContainerItemProxy */;
+		};
+		58A9BC191C6B297D000B3AAD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 58A9BBFC1C6B297D000B3AAD /* ShellGuardDaemon */;
+			targetProxy = 58A9BC181C6B297D000B3AAD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		58A9BC041C6B297D000B3AAD /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				58A9BC051C6B297D000B3AAD /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		58A9BC1E1C6B297D000B3AAD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		58A9BC1F1C6B297D000B3AAD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		58A9BC211C6B297D000B3AAD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ShellGuardDaemon/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.ShellGuard;
+				PRODUCT_NAME = ShellGuardDaemon;
+				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "ShellGuardDaemon/ShellGuardDaemon-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		58A9BC221C6B297D000B3AAD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ShellGuardDaemon/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.ShellGuard;
+				PRODUCT_NAME = ShellGuardDaemon;
+				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "ShellGuardDaemon/ShellGuardDaemon-Bridging-Header.h";
+			};
+			name = Release;
+		};
+		58A9BC241C6B297D000B3AAD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = KevlarDaemonTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.KevlarDaemonTests;
+				PRODUCT_NAME = ShellGuardDaemon;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShellGuardDaemon.app/Contents/MacOS/ShellGuardDaemon";
+			};
+			name = Debug;
+		};
+		58A9BC251C6B297D000B3AAD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = KevlarDaemonTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.KevlarDaemonTests;
+				PRODUCT_NAME = ShellGuardDaemon;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShellGuardDaemon.app/Contents/MacOS/ShellGuardDaemon";
+			};
+			name = Release;
+		};
+		58A9BC271C6B297D000B3AAD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = KevlarDaemonUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.KevlarDaemonUITests;
+				PRODUCT_NAME = ShellGuardDaemon;
+				TEST_TARGET_NAME = KevlarDaemon;
+				USES_XCTRUNNER = YES;
+			};
+			name = Debug;
+		};
+		58A9BC281C6B297D000B3AAD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = KevlarDaemonUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.KevlarDaemonUITests;
+				PRODUCT_NAME = ShellGuardDaemon;
+				TEST_TARGET_NAME = CagekeeperDaemon;
+				USES_XCTRUNNER = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		58A9BBF81C6B297D000B3AAD /* Build configuration list for PBXProject "ShellGuardDaemon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58A9BC1E1C6B297D000B3AAD /* Debug */,
+				58A9BC1F1C6B297D000B3AAD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		58A9BC201C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardDaemon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58A9BC211C6B297D000B3AAD /* Debug */,
+				58A9BC221C6B297D000B3AAD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		58A9BC231C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardDaemonTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58A9BC241C6B297D000B3AAD /* Debug */,
+				58A9BC251C6B297D000B3AAD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		58A9BC261C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardDaemonUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58A9BC271C6B297D000B3AAD /* Debug */,
+				58A9BC281C6B297D000B3AAD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 58A9BBF51C6B297D000B3AAD /* Project object */;
+}

@@ -1,0 +1,19 @@
+[
+    {
+        "process_name" : "sh",
+        "rules" : [
+            {
+                "path" : "/bin/bash",
+                "root": false,
+                "operations" : ["EXECUTE"],
+                "allowed" : false 
+            },
+            {
+                "path" : "/bin/sh",
+                "root": false,
+                "operations" : ["EXECUTE"],
+                "allowed" : false 
+            }
+		]
+    }   
+]

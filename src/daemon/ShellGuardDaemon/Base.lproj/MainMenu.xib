@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
+            <connections>
+                <outlet property="delegate" destination="Voe-Tx-rLC" id="GzC-gU-4Uq"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="CagekeeperDaemon" customModuleProvider="target"/>
+        <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
+        <customObject id="dh1-E0-pyf" userLabel="StatusMenuController" customClass="StatusMenuController" customModule="CagekeeperDaemon" customModuleProvider="target">
+            <connections>
+                <outlet property="complainMenuItem" destination="JZi-Ys-1M5" id="Ua9-2G-opu"/>
+                <outlet property="enforceMenuItem" destination="aGr-2q-aME" id="Pq9-CF-fmL"/>
+                <outlet property="modeMenu" destination="YIs-Sq-M5D" id="1sb-uL-DZ6"/>
+                <outlet property="statusMenu" destination="qZ2-UA-eo1" id="a7X-4D-EXM"/>
+            </connections>
+        </customObject>
+        <menu id="qZ2-UA-eo1">
+            <items>
+                <menuItem title="Status:" id="1pG-aj-yAN" userLabel="Status">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <accessibilityConnection property="title" destination="qZ2-UA-eo1" id="CHZ-Hm-2hb"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="MT0-p0-a5y"/>
+                <menuItem title="Enable" id="6Ee-4h-Jjg">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="enableClicked:" target="dh1-E0-pyf" id="fa5-bQ-4Xf"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Disable" id="cBf-Vw-uQg">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="disableClicked:" target="dh1-E0-pyf" id="LcG-rb-pmC"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="wnS-Qa-xYC"/>
+                <menuItem title="Mode" id="kbY-hj-apf">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Mode" id="YIs-Sq-M5D">
+                        <items>
+                            <menuItem title="Complain" tag="7" id="JZi-Ys-1M5">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <accessibilityConnection property="title" destination="qZ2-UA-eo1" id="f69-Pn-2ug"/>
+                                    <action selector="complainClicked:" target="dh1-E0-pyf" id="eDo-l7-dJL"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Enforce" tag="4" id="aGr-2q-aME">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <accessibilityConnection property="title" destination="qZ2-UA-eo1" id="D4y-bl-5jx"/>
+                                    <action selector="enforceClicked:" target="dh1-E0-pyf" id="AXG-p7-h5Y"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                        <connections>
+                            <accessibilityConnection property="title" destination="qZ2-UA-eo1" id="4e3-Tr-Y6a"/>
+                        </connections>
+                    </menu>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="b2X-ar-kne"/>
+                <menuItem title="About" id="4bJ-g1-LrM">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="aboutClicked:" target="dh1-E0-pyf" id="dit-4P-sG1"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <connections>
+                <accessibilityConnection property="title" destination="1pG-aj-yAN" id="vvc-M1-t3u"/>
+            </connections>
+        </menu>
+    </objects>
+</document>
