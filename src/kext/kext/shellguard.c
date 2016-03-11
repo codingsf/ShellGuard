@@ -35,7 +35,7 @@ kern_return_t shellguard_start(kmod_info_t * ki, void *d)
     }
     init_rules_struct();
     
-    hook_syscalls();
+    //hook_syscalls();
     
     return status;
 }
@@ -50,7 +50,7 @@ kern_return_t shellguard_stop(kmod_info_t *ki, void *d)
     LOG_INFO("Removing kauth listener.\n");
     remove_listener();
     
-    unhook_syscalls();
+    //unhook_syscalls();
     
     LOG_INFO("Cleaning up memory.");
     remove_rules_struct();
