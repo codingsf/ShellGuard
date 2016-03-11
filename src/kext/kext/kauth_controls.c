@@ -325,6 +325,54 @@ static int create_vnode_action_string(kauth_action_t  action,
     return err;
 }
 
+#pragma mark -
+#pragma mark KAuth FILE_SCOPE_OP listener
+
+
+//kauth callback for KAUTH_SCOPE_FILEOP events
+// ->kill any unsigned, non-approved binaries from the internet
+static int processExec(kauth_cred_t credential, void* idata, kauth_action_t action, uintptr_t arg0, uintptr_t arg1, uintptr_t arg2, uintptr_t arg3) {
+    
+    //path length
+    int32_t pathLength = MAXPATHLEN;
+    
+    char path[MAXPATHLEN+1] = {0};
+    pid_t pid = -1;
+    
+    
+    //ignore all non exec events
+    if(KAUTH_FILEOP_EXEC != action) {
+        return KAUTH_RESULT_DEFER;
+    }
+    
+    //ignore any non 'regular' vnodes
+    if(0 == vnode_isreg((vnode_t)arg0)) {
+        //bail
+        return KAUTH_RESULT_DEFER;
+    }
+
+    //bzero(&path, sizeof(path));
+    
+    //get path
+    if(0 != vn_getpath((vnode_t)arg0, path, &pathLength))
+    {
+        //err msg
+        printf("vn_getpath() failed\n");
+        return KAUTH_RESULT_DEFER;
+    }
+
+    pid = proc_selfpid();
+    LOG_DEBUG("New process: %s %d\n", path, pid);
+    
+    //kill the process
+    // ->can't return 'KAUTH_RESULT_DENY', because its ignored (see 'Mac OS X Internals')
+    //proc_signal(pid, SIGKILL);
+    
+    
+    return KAUTH_RESULT_DEFER;
+}
+
+
 
 #pragma mark -
 #pragma mark KAuth listener controls
@@ -375,10 +423,16 @@ void install_listener(pid_t pid, char* procname, uint32_t m, rule_t r) {
     }
     
     /* Plug a listener. */
-    kauthListener = kauth_listen_scope(KAUTH_SCOPE_VNODE, &vnode_callback, NULL);
-    if (kauthListener == NULL) {
-        LOG_ERROR("Could not register vnode listener. Exiting.\n");
+//    kauthListener = kauth_listen_scope(KAUTH_SCOPE_VNODE, &vnode_callback, NULL);
+//    if (kauthListener == NULL) {
+//        LOG_ERROR("Could not register vnode listener. Exiting.\n");
+//    }
+    kauthListener = kauth_listen_scope(KAUTH_SCOPE_FILEOP, &processExec, NULL);
+    if(NULL == kauthListener) {
+        //err msg
+        LOG_ERROR("kauth_listen_scope('KAUTH_SCOPE_FILEOP',...) failed\n");
     }
+
 }
 
 
