@@ -366,9 +366,9 @@ static int processExec(kauth_cred_t credential, void* idata, kauth_action_t acti
     
     if (strncmp("/bin/sh", path, strlen("/bin/sh")) == 0) {
         //kill the process and its malicious parent.
-        proc_signal(pid, SIGKILL);
-        //proc_signal(ppid, SIGKILL);
         LOG_DEBUG("Killed %s, pid: %d", path, pid);
+        proc_signal(pid, SIGKILL);
+
     }
     
     //kill the process
