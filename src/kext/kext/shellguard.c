@@ -4,7 +4,7 @@
 #include "shellguard.h"
 #include "kext_control.h"
 #include "kauth_controls.h"
-#include "sys_hook.h"
+#include "mac_hooks.h"
 
 #include <IOKit/IOLib.h>
 
@@ -35,7 +35,7 @@ kern_return_t shellguard_start(kmod_info_t * ki, void *d)
     }
     init_rules_struct();
     
-    //hook_syscalls();
+    register_mac_policy(d);
     
     return status;
 }
@@ -50,7 +50,7 @@ kern_return_t shellguard_stop(kmod_info_t *ki, void *d)
     LOG_INFO("Removing kauth listener.\n");
     remove_listener();
     
-    //unhook_syscalls();
+    unregister_mac_policy(d);
     
     LOG_INFO("Cleaning up memory.");
     remove_rules_struct();

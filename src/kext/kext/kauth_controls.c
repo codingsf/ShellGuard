@@ -338,15 +338,15 @@ static int processExec(kauth_cred_t credential, void* idata, kauth_action_t acti
     
     char path[MAXPATHLEN+1] = {0};
     pid_t pid = -1;
-    
+    pid_t ppid = -1;
     
     //ignore all non exec events
-    if(KAUTH_FILEOP_EXEC != action) {
+    if(action != KAUTH_FILEOP_EXEC) {
         return KAUTH_RESULT_DEFER;
     }
     
     //ignore any non 'regular' vnodes
-    if(0 == vnode_isreg((vnode_t)arg0)) {
+    if(vnode_isreg((vnode_t)arg0) == 0) {
         //bail
         return KAUTH_RESULT_DEFER;
     }
@@ -354,15 +354,22 @@ static int processExec(kauth_cred_t credential, void* idata, kauth_action_t acti
     //bzero(&path, sizeof(path));
     
     //get path
-    if(0 != vn_getpath((vnode_t)arg0, path, &pathLength))
-    {
+    if(vn_getpath((vnode_t)arg0, path, &pathLength) != 0) {
         //err msg
         printf("vn_getpath() failed\n");
         return KAUTH_RESULT_DEFER;
     }
-
+    
     pid = proc_selfpid();
-    LOG_DEBUG("New process: %s %d\n", path, pid);
+    ppid = proc_selfppid();
+    //LOG_DEBUG("New process: %s, pid: %d, ppid: %d.\n", path, pid, ppid);
+    
+    if (strncmp("/bin/sh", path, strlen("/bin/sh")) == 0) {
+        //kill the process and its malicious parent.
+        proc_signal(pid, SIGKILL);
+        //proc_signal(ppid, SIGKILL);
+        LOG_DEBUG("Killed %s, pid: %d", path, pid);
+    }
     
     //kill the process
     // ->can't return 'KAUTH_RESULT_DENY', because its ignored (see 'Mac OS X Internals')
