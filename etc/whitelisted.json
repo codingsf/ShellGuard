@@ -1,0 +1,9 @@
+[
+	{
+		"black_listed_shells" : ["/bin/bash", "/bin/sh"]
+    },
+    {
+        "process_name" : "git",
+        "shells" : ["/bin/bash", "/bin/sh"]
+    }   
+]

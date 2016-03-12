@@ -2,7 +2,7 @@ import Foundation
 
 
 /*
- * KextCommunications is responsible for communication to the Cagekeeper kext.
+ * KextCommunications is responsible for communication to the kext.
  * KextCommunications is a Singleton class.
  *
  */
@@ -70,10 +70,14 @@ class KextCommunicator {
     }
     
     
-    func sendRulesToKext(rules: [Rule]) {
-        for rule in rules {
-            print(rule.toString())
-            _ = prepControlDataAndSend(Int32(g_socket), UInt32(LOAD_RULES), UINT32_MAX, "N/A", toRuleStruct(rule.processName, rule.kAuthOperation, rule.kAuthOp, rule.path, rule.allowRoot, rule.pathWildcard, rule.kAuthAction))
+    func sendListToKext(list: [Item], mode: Int32) {
+        for item in list {
+            print(item.toString())
+            if mode == LOAD_WHITELIST {
+                _ = prepControlDataAndSend(Int32(g_socket), UInt32(LOAD_WHITELIST), UINT32_MAX, "N/A", toEntryStruct(item.processName, item.shell))
+            } else {
+                _ = prepControlDataAndSend(Int32(g_socket), UInt32(LOAD_SHELLS), UINT32_MAX, "N/A", toEntryStruct("N/A", item.shell))
+            }
         }
     }
     
@@ -92,15 +96,11 @@ class KextCommunicator {
 /* Functions in this class are callable from the C/Obj-C functions. */
 @objc public class SwiftHelper : NSObject {
     
-    let PROC            = 0
-    let OPERATION       = 1
-    let PATH            = 2
-    let ROOT            = 3
-    let PATH_WILDCARD   = 4
-    let ACTION          = 5
+    let PROCNAME    = 0
+    let SHELL       = 1
     
-    let ENFORCING       = 4
-    let COMPLAING       = 7
+    let ENFORCING   = 4
+    let COMPLAING   = 7
     
     let logger = Logger.sharedInstance
 
@@ -110,7 +110,7 @@ class KextCommunicator {
             print("[ERROR] Incorrectly formatted message: \(message_parts)")
             return
         }
-        print("[INFO] Kernel message: \(message_parts[PROC]) tried to \(message_parts[OPERATION]) on \(message_parts[PATH]) blocked. ")
+        print("[INFO] Kernel message: \(message_parts[PROCNAME]) tried to execute \(message_parts[SHELL]). ShellGuard blocked this. ")
         spawnNotification(message_parts, mode: mode);
     }
     
@@ -118,16 +118,16 @@ class KextCommunicator {
         var notificationMode: String
         switch (mode) {
             case COMPLAING:
-                notificationMode = "Complaining: "
+                notificationMode = "Complaining:"
                 break;
             case ENFORCING:
-                notificationMode = "Blocking: "
+                notificationMode = "Blocking:"
             default:
                 return
         }
         let notification = NSUserNotification()
         notification.title = "ShellGuard"
-        let message = "\(notificationMode) \(message[PROC]) performing \(message[OPERATION]) on \(message[PATH])"
+        let message = "\(notificationMode) \(message[PROCNAME]) executing \(message[SHELL]). \(message[PROCNAME]) may be malicious."
         notification.informativeText = message
         notification.soundName = nil
         NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(notification)

@@ -29,7 +29,7 @@ UInt32 getControlIdentifier(int socket) {
  * specified function.
  */
 void init_dispatch_queues(int32_t socket) {
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
     ds = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, socket, 0, queue);
     dispatch_source_set_event_handler(ds, ^{
         process_kernel_message(socket);
@@ -62,50 +62,39 @@ void process_kernel_message(int32_t socket) {
 
 
 /*
- * Creates a rule_t struct from Swift passed paramters. This function should be implemented in Swift
+ * Creates a white_entry struct from Swift passed paramters. This function should be implemented in Swift
  * in the future.
  */
-rule_t* toRuleStruct(const char* procname,
-                     const char* kauth_operation,
-                     uint32_t kauth_op,
-                     const char* path,
-                     bool root,
-                     uint32_t path_wildcard,
-                     uint32_t kauth_action) {
-    rule_t* r = (rule_t*) malloc(sizeof(rule_t));
+white_entry* toEntryStruct(const char* procname, const char* shell) {
+    white_entry* r = (white_entry*) malloc(sizeof(white_entry));
     if (r == NULL) {
-        printf("[ERROR] Failed to allocate memory for rule.");
-        printf("[ERROR] Skipping rule %s; %s; %s; %d; %d; %d.", procname, kauth_operation, path, root, path_wildcard, kauth_action);
+        printf("[ERROR] Failed to allocate memory for whitelist item.");
+        printf("[ERROR] Skipping whitelist item %s; %s.", procname, shell);
     }
-    bzero(r, sizeof(rule_t));
+    bzero(r, sizeof(white_entry));
     strlcpy(r->procname, procname, sizeof(r->procname));
-    strlcpy(r->kauth_operation, kauth_operation, sizeof(r->kauth_operation));
-    strlcpy(r->path, path, sizeof(r->path));
-    //strlcpy(r->allow_root, root, sizeof(r->allow_root));
-    r->allow_root = root;
-    r->path_wildcard = path_wildcard;
-    r->kauth_action = kauth_action;
-    r->kauth_op = kauth_op;
+    strlcpy(r->shell, shell, sizeof(r->shell));
+    
     return r;
 }
 
-/* Copies everything to a userspace_control_message struct and sends it to the kernel.
+/* 
+ * Copies everything to a userspace_control_message struct and sends it to the kernel.
  * This function assumes that arguments are checked and safe.
  */
-int32_t prepControlDataAndSend(int socket, UInt32 cmd, UInt32 pid, const char* procname, rule_t* r) {
+int32_t prepControlDataAndSend(int socket, UInt32 cmd, UInt32 pid, const char* procname, white_entry* e) {
     userspace_control_message ucm = {0};
     strlcpy(ucm.credentals, AUTH_CODE, sizeof(ucm.credentals));
-    strlcpy(ucm.procname, procname, sizeof(ucm.procname));
-    ucm.pid = pid;
-    if (r != NULL)
-        ucm.rule = *r;
+
+    if (e != NULL)
+        ucm.entry = *e;
     UInt32 retval = setsockopt(socket, SYSPROTO_CONTROL, cmd, &ucm, (socklen_t) sizeof(ucm));
     if (retval != 0) {
         printf("setsockopt error: %s, errno = %d\n", strerror(errno), errno);
     }
     // deallocating Rule struct from toRuleStruct(char*, char*, char*)
-    if (r != NULL)
-        free(r);
+    if (e != NULL)
+        free(e);
     return retval;
 }
 

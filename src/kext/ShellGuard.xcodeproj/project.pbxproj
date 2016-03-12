@@ -7,37 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		15724BC91C6609B0004DB0C0 /* kauth_controls.c in Sources */ = {isa = PBXBuildFile; fileRef = 15724BC71C6609B0004DB0C0 /* kauth_controls.c */; };
-		15724BCA1C6609B0004DB0C0 /* kauth_controls.h in Headers */ = {isa = PBXBuildFile; fileRef = 15724BC81C6609B0004DB0C0 /* kauth_controls.h */; };
 		15D705F31C5FC051000846DC /* definitions.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705E81C5FC051000846DC /* definitions.h */; };
 		15D705F41C5FC051000846DC /* shellguard.c in Sources */ = {isa = PBXBuildFile; fileRef = 15D705E91C5FC051000846DC /* shellguard.c */; };
 		15D705F51C5FC051000846DC /* shellguard.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705EA1C5FC051000846DC /* shellguard.h */; };
 		15D705F71C5FC051000846DC /* kext_control.c in Sources */ = {isa = PBXBuildFile; fileRef = 15D705EC1C5FC051000846DC /* kext_control.c */; };
 		15D705F81C5FC051000846DC /* kext_control.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705ED1C5FC051000846DC /* kext_control.h */; };
-		15D705F91C5FC051000846DC /* rules.c in Sources */ = {isa = PBXBuildFile; fileRef = 15D705EE1C5FC051000846DC /* rules.c */; };
-		15D705FA1C5FC051000846DC /* rules.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705EF1C5FC051000846DC /* rules.h */; };
+		15D705F91C5FC051000846DC /* whitelist.c in Sources */ = {isa = PBXBuildFile; fileRef = 15D705EE1C5FC051000846DC /* whitelist.c */; };
+		15D705FA1C5FC051000846DC /* whitelist.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705EF1C5FC051000846DC /* whitelist.h */; };
 		15D705FB1C5FC051000846DC /* shared_data.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705F01C5FC051000846DC /* shared_data.h */; };
-		15D705FC1C5FC051000846DC /* string_ops.c in Sources */ = {isa = PBXBuildFile; fileRef = 15D705F11C5FC051000846DC /* string_ops.c */; };
-		15D705FD1C5FC051000846DC /* string_ops.h in Headers */ = {isa = PBXBuildFile; fileRef = 15D705F21C5FC051000846DC /* string_ops.h */; };
 		15DC01FD1C92DC2400CDF837 /* mac_hooks.c in Sources */ = {isa = PBXBuildFile; fileRef = 15DC01FB1C92DC2400CDF837 /* mac_hooks.c */; };
 		15DC01FE1C92DC2400CDF837 /* mac_hooks.h in Headers */ = {isa = PBXBuildFile; fileRef = 15DC01FC1C92DC2400CDF837 /* mac_hooks.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		15578ADB1C23F68300F447E9 /* ShellGuard.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShellGuard.kext; sourceTree = BUILT_PRODUCTS_DIR; };
-		15724BC71C6609B0004DB0C0 /* kauth_controls.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = kauth_controls.c; path = kext/kauth_controls.c; sourceTree = SOURCE_ROOT; };
-		15724BC81C6609B0004DB0C0 /* kauth_controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kauth_controls.h; path = kext/kauth_controls.h; sourceTree = SOURCE_ROOT; };
 		15D705E81C5FC051000846DC /* definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = definitions.h; path = kext/definitions.h; sourceTree = SOURCE_ROOT; };
 		15D705E91C5FC051000846DC /* shellguard.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = shellguard.c; path = kext/shellguard.c; sourceTree = SOURCE_ROOT; };
 		15D705EA1C5FC051000846DC /* shellguard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shellguard.h; path = kext/shellguard.h; sourceTree = SOURCE_ROOT; };
 		15D705EB1C5FC051000846DC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = kext/Info.plist; sourceTree = SOURCE_ROOT; };
 		15D705EC1C5FC051000846DC /* kext_control.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = kext_control.c; path = kext/kext_control.c; sourceTree = SOURCE_ROOT; };
 		15D705ED1C5FC051000846DC /* kext_control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kext_control.h; path = kext/kext_control.h; sourceTree = SOURCE_ROOT; };
-		15D705EE1C5FC051000846DC /* rules.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rules.c; path = kext/rules.c; sourceTree = SOURCE_ROOT; };
-		15D705EF1C5FC051000846DC /* rules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rules.h; path = kext/rules.h; sourceTree = SOURCE_ROOT; };
+		15D705EE1C5FC051000846DC /* whitelist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = whitelist.c; path = kext/whitelist.c; sourceTree = SOURCE_ROOT; };
+		15D705EF1C5FC051000846DC /* whitelist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = whitelist.h; path = kext/whitelist.h; sourceTree = SOURCE_ROOT; };
 		15D705F01C5FC051000846DC /* shared_data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shared_data.h; path = kext/shared_data.h; sourceTree = SOURCE_ROOT; };
-		15D705F11C5FC051000846DC /* string_ops.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = string_ops.c; path = kext/string_ops.c; sourceTree = SOURCE_ROOT; };
-		15D705F21C5FC051000846DC /* string_ops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string_ops.h; path = kext/string_ops.h; sourceTree = SOURCE_ROOT; };
 		15DC01FB1C92DC2400CDF837 /* mac_hooks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mac_hooks.c; sourceTree = "<group>"; };
 		15DC01FC1C92DC2400CDF837 /* mac_hooks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mac_hooks.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -74,16 +66,12 @@
 			children = (
 				15D705E91C5FC051000846DC /* shellguard.c */,
 				15D705EA1C5FC051000846DC /* shellguard.h */,
-				15724BC71C6609B0004DB0C0 /* kauth_controls.c */,
-				15724BC81C6609B0004DB0C0 /* kauth_controls.h */,
 				15DC01FB1C92DC2400CDF837 /* mac_hooks.c */,
 				15DC01FC1C92DC2400CDF837 /* mac_hooks.h */,
 				15D705EC1C5FC051000846DC /* kext_control.c */,
 				15D705ED1C5FC051000846DC /* kext_control.h */,
-				15D705EE1C5FC051000846DC /* rules.c */,
-				15D705EF1C5FC051000846DC /* rules.h */,
-				15D705F11C5FC051000846DC /* string_ops.c */,
-				15D705F21C5FC051000846DC /* string_ops.h */,
+				15D705EE1C5FC051000846DC /* whitelist.c */,
+				15D705EF1C5FC051000846DC /* whitelist.h */,
 				15D705E81C5FC051000846DC /* definitions.h */,
 				15D705F01C5FC051000846DC /* shared_data.h */,
 				15D705EB1C5FC051000846DC /* Info.plist */,
@@ -98,14 +86,12 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				15D705FD1C5FC051000846DC /* string_ops.h in Headers */,
 				15D705F81C5FC051000846DC /* kext_control.h in Headers */,
 				15D705FB1C5FC051000846DC /* shared_data.h in Headers */,
 				15D705F51C5FC051000846DC /* shellguard.h in Headers */,
 				15D705F31C5FC051000846DC /* definitions.h in Headers */,
 				15DC01FE1C92DC2400CDF837 /* mac_hooks.h in Headers */,
-				15D705FA1C5FC051000846DC /* rules.h in Headers */,
-				15724BCA1C6609B0004DB0C0 /* kauth_controls.h in Headers */,
+				15D705FA1C5FC051000846DC /* whitelist.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,11 +163,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				15D705F71C5FC051000846DC /* kext_control.c in Sources */,
-				15724BC91C6609B0004DB0C0 /* kauth_controls.c in Sources */,
 				15D705F41C5FC051000846DC /* shellguard.c in Sources */,
-				15D705FC1C5FC051000846DC /* string_ops.c in Sources */,
 				15DC01FD1C92DC2400CDF837 /* mac_hooks.c in Sources */,
-				15D705F91C5FC051000846DC /* rules.c in Sources */,
+				15D705F91C5FC051000846DC /* whitelist.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
