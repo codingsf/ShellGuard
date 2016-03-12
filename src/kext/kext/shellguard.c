@@ -3,7 +3,6 @@
 #include "shared_data.h"
 #include "shellguard.h"
 #include "kext_control.h"
-#include "kauth_controls.h"
 #include "mac_hooks.h"
 
 #include <IOKit/IOLib.h>
@@ -24,8 +23,8 @@ kern_return_t shellguard_start(kmod_info_t * ki, void *d)
 {
     kern_return_t status = KERN_SUCCESS;
     gMallocTag = NULL;
-    LOG_INFO("Starting........\n");
-    LOG_INFO("Installing cagekeeper kext controls...\n");
+    LOG_INFO("Hi kernel! : )");
+    LOG_INFO("Installing ShellGuard kext controls.\n");
     install_kext_control();
     
     LOG_INFO("Initialzing some memory.");
@@ -33,7 +32,7 @@ kern_return_t shellguard_start(kmod_info_t * ki, void *d)
     if (gMallocTag == NULL) {
         status = KERN_FAILURE;
     }
-    init_rules_struct();
+    init_list_structs();
     
     register_mac_policy(d);
     
@@ -47,13 +46,11 @@ kern_return_t shellguard_stop(kmod_info_t *ki, void *d)
         // kill client? Waiting instead...
         IOSleep(5000);
     }
-    LOG_INFO("Removing kauth listener.\n");
-    remove_listener();
     
     unregister_mac_policy(d);
     
     LOG_INFO("Cleaning up memory.");
-    remove_rules_struct();
+    remove_list_structs();
     
     if (gMallocTag != NULL) {
         OSMalloc_Tagfree(gMallocTag);

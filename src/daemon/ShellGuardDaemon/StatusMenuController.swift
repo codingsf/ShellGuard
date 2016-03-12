@@ -4,31 +4,29 @@ class StatusMenuController: NSObject {
     
     /* State the application can be in. */
     enum State: UInt32 {
-        case MONITOR_PID        = 1
-        case MONITOR_PROC       = 2
-        case MONITOR_OFF        = 3
+        case LOAD_WHITELIST     = 1
+        case LOAD_SHELLS        = 2
         case ENFORCING          = 4
         case ENFORCING_OFF      = 5
-        case LOAD_RULES         = 6
         case COMPLAINING        = 7
         case COMPLAINING_OFF    = 8
     }
     
-    let POLICY_FILE_LOCATION = "/Users/Shared/policies.json"
+    let POLICY_FILE_LOCATION = "/Users/Shared/whitelisted.json"
     
     let DARK        = true
     let ENABLED     = true
     let LIGHT       = false
     let DISABLED    = false
     
-    let loader = RulesLoader.sharedInstance
+    let loader = ConfigLoader.sharedInstance
     let kextCommunicate = KextCommunicator.sharedInstance
     let secureStore = KeychainStore.sharedInstance
     
     let kextCommunicationsQueue = dispatch_queue_create("KextCommunications", nil)
     
     var connectedToKext = false
-    var cagekeeperMode: UInt32 = 4
+    var currentMode: UInt32 = 4
     var active = false
 
     /*
@@ -37,18 +35,15 @@ class StatusMenuController: NSObject {
     let statusItem = NSStatusBar.systemStatusBar().statusItemWithLength(NSVariableStatusItemLength)
     var statusBarIcon = NSImage()
     var statusMenuItem: NSMenuItem!
-    //var modeMenuItem: NSMenuItem!
+
     @IBOutlet weak var statusMenu: NSMenu!
     @IBOutlet weak var modeMenu: NSMenu!
-
-//    @IBOutlet weak var enforceMenuItem: NSMenuItem!
-//    @IBOutlet weak var complainMenuItem: NSMenuItem!
     
     @IBAction func enableClicked(sender: NSMenuItem) {
-        control((cagekeeperMode, true))
+        control((currentMode, true))
     }
     @IBAction func disableClicked(sender: NSMenuItem) {
-        control((cagekeeperMode, false))
+        control((currentMode, false))
     }
     @IBAction func complainClicked(sender: NSMenuItem) {
         actionCommonToAllMenus(sender)
@@ -80,10 +75,10 @@ class StatusMenuController: NSObject {
         print("\n\t[ Swift OS X ShellGuard Daemon ] \n\n")
         print("[INFO] Connecting to kernel...")
         connectKext()
-        //connectedToKext = true
+        connectedToKext = true
         /* Restore previously saved state from Keychain. */
         restoreSavedState()
-        control((cagekeeperMode, connectedToKext))
+        control((currentMode, connectedToKext))
     }
     
     
@@ -131,14 +126,14 @@ class StatusMenuController: NSObject {
     }
     
     func enableMode(mode: UInt32) {
-        loader.readJSONPocilies(POLICY_FILE_LOCATION)
-        print(loader.getLoadedRules())
-        kextCommunicate.sendRulesToKext(loader.getLoadedRules())
+        loader.loadConfigFile(POLICY_FILE_LOCATION)
+        kextCommunicate.sendListToKext(loader.getWhitelist(), mode: LOAD_WHITELIST)
+        kextCommunicate.sendListToKext(loader.getShellList(), mode: LOAD_SHELLS)
         kextCommunicate.prepAndSendToSocket(mode, pid: UINT32_MAX, procname: "N/A")
     }
     
     func disableMode(mode: UInt32) {
-        loader.emptyLoadedRules()
+        loader.emptyWhitelist()
         self.kextCommunicate.prepAndSendToSocket(mode, pid: UINT32_MAX, procname: "N/A")
     }
     
@@ -184,20 +179,20 @@ class StatusMenuController: NSObject {
     }
     
     func saveState(state: UInt32) {
-        cagekeeperMode = state
+        currentMode = state
         secureStore.set(String(state), forKey: "ShellGuardState")
     }
     
     func restoreSavedState() {
         if let stateStr = secureStore.get("ShellGuardState") {
             
-            cagekeeperMode = UInt32(stateStr)!
+            currentMode = UInt32(stateStr)!
         } else {
             // always fall back to enforcing mode.
             print("[ERROR] Falling down to ENFORCING")
-            cagekeeperMode = State.ENFORCING.rawValue
+            currentMode = State.ENFORCING.rawValue
         }
-        if let modeMenuItem = self.modeMenu.itemWithTag(Int(cagekeeperMode)) {
+        if let modeMenuItem = self.modeMenu.itemWithTag(Int(currentMode)) {
             modeMenuItem.state = NSOnState
         }
     }

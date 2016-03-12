@@ -3,11 +3,12 @@
 #include "kext_control.h"
 #include "definitions.h"
 #include "shared_data.h"
-#include "kauth_controls.h"
 
 #include <sys/kern_control.h>
 #include <sys/errno.h>
 #include <sys/errno.h>
+
+extern int32_t state;
 
 /* local prototypes */
 static int ctl_connect(kern_ctl_ref ctl_ref, struct sockaddr_ctl *sac, void **unitinfo);
@@ -16,7 +17,6 @@ static int ctl_set(kern_ctl_ref ctl_ref, u_int32_t unit, void *unitinfo, int opt
 
 
 /* some globals */
-extern kauth_listener_t kauthListener;
 static int32_t g_number_of_clients;
 static kern_ctl_ref g_ctl_ref;
 static u_int32_t g_client_unit = 0;
@@ -94,8 +94,8 @@ static int ctl_connect(kern_ctl_ref ctl_ref, struct sockaddr_ctl *sac, void **un
         return EBUSY;
     }
     pid_t pid = proc_selfpid();
-    char procname[64] = {0};
-    proc_selfname(procname, 64);
+    char procname[128] = {0};
+    proc_selfname(procname, 128);
     LOG_INFO("Process %s with pid %d connecting...", procname, pid);
     g_number_of_clients++;
     g_client_unit = sac->sc_unit;
@@ -119,8 +119,8 @@ static errno_t ctl_disconnect(kern_ctl_ref ctl_ref, u_int32_t unit, void *unitin
 
 /*
  * Receive data from userland to kernel.
- * This is where gets decided which params to pass to the listener in order
- * to configure it correctly.
+ * This is where the state of the kext (sent from the client) is decided and 
+ * proper params are set.
  */
 static int ctl_set(kern_ctl_ref ctl_ref, u_int32_t unit, void *unitinfo, int opt, void *data, size_t len)
 {
@@ -137,37 +137,29 @@ static int ctl_set(kern_ctl_ref ctl_ref, u_int32_t unit, void *unitinfo, int opt
     }
     
     switch (opt) {
-        case MONITOR_PID:
-            LOG_DEBUG("Received request to enable MONITOR mode for pid %d.", ucm->pid);
-            install_listener(ucm->pid, NULL, MONITOR_PID, ucm->rule);
+        case LOAD_WHITELIST:
+            LOG_DEBUG("Received request to LOAD WHITELIST.");
+            insert_whitelist_entry(&ucm->entry);
             break;
-        case MONITOR_PROC:
-            LOG_DEBUG("Received request to enable MONITOR mode for process %s.", ucm->procname);
-            install_listener(0, ucm->procname, MONITOR_PROC, ucm->rule);
-            break;
-        case MONITOR_OFF:
-            LOG_DEBUG("Received request to disable MONITOR mode.");
-            install_listener(0, NULL, MONITOR_OFF, ucm->rule);
+        case LOAD_SHELLS:
+            LOG_DEBUG("Received request to LOAD SHELLS.");
+            insert_shell_entry(&ucm->entry);
             break;
         case ENFORCING:
             LOG_DEBUG("Received request to enable ENFORCING mode.");
-            install_listener(0, NULL, ENFORCING, ucm->rule);
+            state = ENFORCING;
             break;
         case ENFORCING_OFF:
             LOG_DEBUG("Received request to disable ENFORCING mode.");
-            install_listener(0, NULL, ENFORCING_OFF, ucm->rule);
-            break;
-        case LOAD_RULES:
-            LOG_DEBUG("Received request to load rules.");
-            insert_rulenode(&ucm->rule);
+            state = ENFORCING_OFF;
             break;
         case COMPLAINING:
             LOG_DEBUG("Received request to enable COMPLAINING mode.");
-            install_listener(0, NULL, COMPLAINING, ucm->rule);
+            state = COMPLAINING;
             break;
         case COMPLAINING_OFF:
             LOG_DEBUG("Received request to disable COMPLAINING mode.");
-            install_listener(0, NULL, COMPLAINING_OFF, ucm->rule);
+            state = COMPLAINING_OFF;
             break;
         default:
             err = ENOTSUP;

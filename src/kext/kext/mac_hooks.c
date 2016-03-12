@@ -7,13 +7,17 @@
 //
 
 #include "mac_hooks.h"
+#include "kext_control.h"
 #include "definitions.h"
+#include "whitelist.h"
 
 #include <sys/proc.h>
 #include <security/mac_framework.h>
 #include <security/mac.h>
 #include <security/mac_policy.h>
 #include <sys/vnode.h>
+
+extern int32_t state;
 
 
 static int hook_exec(
@@ -31,7 +35,6 @@ static int hook_exec(
 
 #pragma mark -
 #pragma mark TrustedBSD Hooks
-
 
 static struct mac_policy_ops shellguard_ops = {
     .mpo_vnode_check_exec = hook_exec
@@ -60,9 +63,10 @@ static int hook_exec(kauth_cred_t cred,
                      struct componentname *cnp,
                      u_int *csflags,
                      void *macpolicyattr,
-                     size_t macpolicyattrlen ){
-
+                     size_t macpolicyattrlen )
+{
     /* Some vars we need. */
+    int32_t action = ALLOW;
     int32_t path_length = MAXPATHLEN;
     char procname[MAXPATHLEN+1] = {0};
     char path[MAXPATHLEN+1]     = {0};
@@ -72,22 +76,52 @@ static int hook_exec(kauth_cred_t cred,
     if (vn_getpath(vp, path, &path_length) != 0 ) {
         LOG_ERROR("Can't build path to vnode.");
         /* Now what...? Just allowing the action for now... */
-        return 0;
+        return ALLOW;
     }
     
     pid = proc_selfpid();
     ppid = proc_selfppid();
     proc_name(pid, procname, sizeof(procname));
     LOG_DEBUG("New process: %s, pid: %d, ppid: %d.\n", path, pid, ppid);
-    
-    if (strncmp("/bin/sh", path, strlen("/bin/sh")) == 0) {
-        //kill the process and its malicious parent.
-        LOG_DEBUG("Killed %s, pid: %d, ppid: %d", path, pid, ppid);
-        LOG_DEBUG("Killed parent process pid: %d", pid);
-        proc_signal(pid, SIGKILL);
-        return DENY;
+    switch (state) {
+        case ENFORCING:
+            if (is_shell_blocked(path)) {
+                action = filter(procname, path);
+                if (action == DENY) {
+                    LOG_INFO("Blocking execution of %s by %s.", path, procname);
+                    LOG_INFO("Killing (likely) malicious parent process.");
+                    /* Send message to userland. */
+                    kern_space_info_message kern_info_m = {0};
+                    snprintf(kern_info_m.message, sizeof(kern_info_m.message) - 4, "%s;%s;", procname, path);
+                    kern_info_m.mode = ENFORCING;
+                    queue_userland_data(&kern_info_m);
+                    /* Also kill the malicious parent that tries to spawn the shell. */
+                    proc_signal(pid, SIGKILL);
+                }
+            }
+            break;
+        case COMPLAINING:
+            if (is_shell_blocked(path)) {
+                action = filter(procname, path);
+                if (action == DENY) {
+                    LOG_INFO("Complaining: execution of %s by %s.", path, procname);
+                    LOG_INFO("Would kill (likely) malicious parent process.");
+                    /* Also kill the malicious parent that tries to spawn the shell. */
+                    /* Send message to userland. */
+                    kern_space_info_message kern_info_m = {0};
+                    snprintf(kern_info_m.message, sizeof(kern_info_m.message) - 4, "%s;%s;", procname, path);
+                    kern_info_m.mode = COMPLAINING;
+                    queue_userland_data(&kern_info_m);
+                    /* Eventually allow the action, because we will only complain. */
+                    action = ALLOW;
+                }
+            }
+            break;
+        default:
+            break;
+
     }
-    return ALLOW;
+    return action;
 }
 
 

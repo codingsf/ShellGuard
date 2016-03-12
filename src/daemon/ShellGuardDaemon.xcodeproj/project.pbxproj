@@ -15,8 +15,8 @@
 		150739EE1C7B14BE0019738B /* KextCommunicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739C21C7B0D7D0019738B /* KextCommunicator.swift */; };
 		150739EF1C7B14BE0019738B /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739C31C7B0D7D0019738B /* KeychainStore.swift */; };
 		150739F01C7B14BE0019738B /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739C41C7B0D7D0019738B /* Logger.swift */; };
-		150739F11C7B14BE0019738B /* RulesLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739C61C7B0D7D0019738B /* RulesLoader.swift */; };
-		150739F21C7B14BE0019738B /* Rule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739C51C7B0D7D0019738B /* Rule.swift */; };
+		150739F11C7B14BE0019738B /* ConfigLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150739C61C7B0D7D0019738B /* ConfigLoader.swift */; };
+		15842BCD1C94348B00AAA64D /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15842BCC1C94348B00AAA64D /* Item.swift */; };
 		58A9BC061C6B297D000B3AAD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 58A9BC041C6B297D000B3AAD /* MainMenu.xib */; };
 /* End PBXBuildFile section */
 
@@ -45,12 +45,13 @@
 		150739C21C7B0D7D0019738B /* KextCommunicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KextCommunicator.swift; sourceTree = "<group>"; };
 		150739C31C7B0D7D0019738B /* KeychainStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		150739C41C7B0D7D0019738B /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
-		150739C51C7B0D7D0019738B /* Rule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rule.swift; sourceTree = "<group>"; };
-		150739C61C7B0D7D0019738B /* RulesLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RulesLoader.swift; sourceTree = "<group>"; };
+		150739C61C7B0D7D0019738B /* ConfigLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigLoader.swift; sourceTree = "<group>"; };
 		150739C71C7B0D7D0019738B /* shared_data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shared_data.h; path = ../../kext/kext/shared_data.h; sourceTree = "<group>"; };
 		150739C81C7B0D7D0019738B /* socket_operations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = socket_operations.m; sourceTree = "<group>"; };
 		150739C91C7B0D7D0019738B /* StatusMenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusMenuController.swift; sourceTree = "<group>"; };
 		150739CA1C7B0D7D0019738B /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
+		15842BCB1C941B6300AAA64D /* socket_operations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = socket_operations.h; sourceTree = "<group>"; };
+		15842BCC1C94348B00AAA64D /* Item.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		58A9BBFD1C6B297D000B3AAD /* ShellGuardDaemon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShellGuardDaemon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		58A9BC051C6B297D000B3AAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		58A9BC0C1C6B297D000B3AAD /* ShellGuardDaemon.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShellGuardDaemon.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -96,6 +97,7 @@
 				150739C01C7B0D7D0019738B /* ShellGuardDaemon-Bridging-Header.h */,
 				150739C71C7B0D7D0019738B /* shared_data.h */,
 				150739C81C7B0D7D0019738B /* socket_operations.m */,
+				15842BCB1C941B6300AAA64D /* socket_operations.h */,
 			);
 			name = "C-Bridging";
 			sourceTree = "<group>";
@@ -128,8 +130,8 @@
 				150739C21C7B0D7D0019738B /* KextCommunicator.swift */,
 				150739C31C7B0D7D0019738B /* KeychainStore.swift */,
 				150739C41C7B0D7D0019738B /* Logger.swift */,
-				150739C61C7B0D7D0019738B /* RulesLoader.swift */,
-				150739C51C7B0D7D0019738B /* Rule.swift */,
+				150739C61C7B0D7D0019738B /* ConfigLoader.swift */,
+				15842BCC1C94348B00AAA64D /* Item.swift */,
 				150739C11C7B0D7D0019738B /* Info.plist */,
 				150739BE1C7B0D7D0019738B /* Assets.xcassets */,
 				58A9BC041C6B297D000B3AAD /* MainMenu.xib */,
@@ -279,9 +281,9 @@
 				150739ED1C7B14BE0019738B /* StatusMenuController.swift in Sources */,
 				150739EE1C7B14BE0019738B /* KextCommunicator.swift in Sources */,
 				150739EF1C7B14BE0019738B /* KeychainStore.swift in Sources */,
+				15842BCD1C94348B00AAA64D /* Item.swift in Sources */,
 				150739F01C7B14BE0019738B /* Logger.swift in Sources */,
-				150739F11C7B14BE0019738B /* RulesLoader.swift in Sources */,
-				150739F21C7B14BE0019738B /* Rule.swift in Sources */,
+				150739F11C7B14BE0019738B /* ConfigLoader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
