@@ -19,8 +19,8 @@
 
 
 typedef struct {
-    char    procname[255];
-    char    shell[255];
+    char    procname[MAXPATHLEN+1];
+    char    shell[MAXPATHLEN+1];
 } white_entry;
 
 

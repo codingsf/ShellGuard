@@ -9,18 +9,20 @@
 #include <libkern/libkern.h>
 
 typedef struct white_entry_t {
-    char        procname[255];
-    char        shell[255];
+    char        procname[MAXPATHLEN+1];
+    char        shell[MAXPATHLEN+1];
     LIST_ENTRY(white_entry_t) entries;
 } white_entry_t;
 
 typedef struct shell_entry_t {
-    char        shell[255];
+    char        shell[MAXPATHLEN+1];
     LIST_ENTRY(shell_entry_t) entries;
 } shell_entry_t;
 
 typedef LIST_HEAD(white_list, white_entry_t) white_list_t;
 typedef LIST_HEAD(black_list, shell_entry_t)  shell_list_t;
+
+
 
 kern_return_t init_list_structs(void);
 kern_return_t remove_list_structs(void);

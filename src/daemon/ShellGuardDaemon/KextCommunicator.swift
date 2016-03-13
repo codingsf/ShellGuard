@@ -88,7 +88,7 @@ class KextCommunicator {
             print("[ERROR] Incorrectly formatted message: \(message_parts)")
             return
         }
-        print("[INFO] Kernel message: \(message_parts[PROC]) tried to \(message_parts[OPERATION]) on \(message_parts[PATH]) blocked. ")
+        print("[INFO] Kernel message: \(message_parts[PROC]) tried to \(message_parts[OPERATION]) on \(message_parts[PATH]) blocked.")
     }
 }
 
