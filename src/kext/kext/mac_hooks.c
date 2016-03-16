@@ -5,6 +5,11 @@
 //  Created by v on 11/03/16.
 //  Copyright © 2016 vivami. All rights reserved.
 //
+//
+//  TrustedBSD MAC hooks for the execution of processes. This is where the
+//  ShellGuard magic happens...
+//
+//
 
 #include "mac_hooks.h"
 #include "kext_control.h"
@@ -22,22 +27,24 @@
 
 
 
-extern int32_t state;
+extern int32_t      state;
+/* This mutex protects the LIST that holds the path's processes. */
+static lck_mtx_t    *proc_list_lock = NULL;
 
 
-SLIST_HEAD(processes_slist, process_t);
-static struct processes_slist process_list;
+LIST_HEAD(processes_LIST, process_t);
+static struct processes_LIST process_list;
 
 typedef struct process_t {
     char    procname[MAXPATHLEN+1];
     pid_t   pid;
     pid_t   ppid;
-    SLIST_ENTRY(process_t) entries;
+    LIST_ENTRY(process_t) entries;
 } process_t;
 
 kern_return_t cleanup_list_structure(void);
 kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid);
-char* get_process_path(pid_t pid);
+int32_t get_process_path(pid_t pid, char** path_ptr);
 
 
 static int hook_exec(kauth_cred_t cred,
@@ -109,9 +116,7 @@ static int hook_exec(kauth_cred_t cred,
     switch (state) {
         case ENFORCING:
             if (is_shell_blocked(path)) {
-
-                procpath = get_process_path(ppid);
-                if (procpath == NULL) {
+                if (get_process_path(ppid, &procpath) != 0) {
                     procpath = path;
                 }
                 action = filter(procname, procpath);
@@ -130,9 +135,7 @@ static int hook_exec(kauth_cred_t cred,
             break;
         case COMPLAINING:
             if (is_shell_blocked(path)) {
-                char* procpath;
-                procpath = get_process_path(ppid);
-                if (procpath == NULL) {
+                if (get_process_path(ppid, &procpath) != 0) {
                     procpath = path;
                 }
                 action = filter(procname, path);
@@ -154,8 +157,9 @@ static int hook_exec(kauth_cred_t cred,
             break;
 
     }
+    
     if (procpath != NULL) {
-        OSFree(procpath, sizeof(procpath), return_mallocTag());
+        OSFree(procpath, MAXPATHLEN, return_mallocTag());
     }
 
     return action;
@@ -164,27 +168,31 @@ static int hook_exec(kauth_cred_t cred,
 /* Store new process so that we can retrieve its path later. */
 kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid)
 {
+    lck_mtx_lock(proc_list_lock);
+    
     process_t *iterator = NULL;
-    SLIST_FOREACH(iterator, &process_list, entries) {
-        //LOG_DEBUG("Process: %s, pid: %d", iterator->procname, iterator->pid);
+    LIST_FOREACH(iterator, &process_list, entries) {
         if (iterator->pid == pid) {
             /* There is a process with the same PID. Reuse of PID means the previous process 
              * does not exsist anymore.
              */
-            SLIST_REMOVE(&process_list, iterator, process_t, entries);
+            LIST_REMOVE(iterator, entries);
             OSFree(iterator, sizeof(process_t), return_mallocTag());
         }
     }
     process_t *new_entry = OSMalloc(sizeof(process_t), return_mallocTag());
     if (new_entry == NULL) {
         LOG_ERROR("Could not allocate memory for process structure.");
+        lck_mtx_unlock(proc_list_lock);
         return KERN_FAILURE;
     }
     memset(new_entry, 0, sizeof(process_t));
     new_entry->pid = pid;
     new_entry->ppid = ppid;
     strlcpy(new_entry->procname, procname, sizeof(new_entry->procname));
-    SLIST_INSERT_HEAD(&process_list, new_entry, entries);
+    LIST_INSERT_HEAD(&process_list, new_entry, entries);
+    
+    lck_mtx_unlock(proc_list_lock);
     return KERN_SUCCESS;
 }
 
@@ -192,38 +200,69 @@ kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid)
 /* cleanup the process list memory. */
 kern_return_t cleanup_list_structure(void)
 {
+    lck_mtx_lock(proc_list_lock);
+    
     process_t *entry = NULL;
     process_t *next_entry = NULL;
-    SLIST_FOREACH_SAFE(entry, &process_list, entries, next_entry) {
-        SLIST_REMOVE(&process_list, entry, process_t, entries);
+    LIST_FOREACH_SAFE(entry, &process_list, entries, next_entry) {
+        LIST_REMOVE(entry, entries);
         OSFree(entry, sizeof(process_t), return_mallocTag());
     }
+    
+    lck_mtx_unlock(proc_list_lock);
     return KERN_SUCCESS;
 }
 
-
-char* get_process_path(pid_t pid)
+/* Get process path from the list of currently running processes. This list contains only
+ * the processes that executed *after* ShellGuard was loaded into the kernel.
+ */
+int32_t get_process_path(pid_t pid, char** path_ptr)
 {
+    if (path_ptr == NULL) {
+        return -1;
+    }
+    lck_mtx_lock(proc_list_lock);
+    
     process_t *entry = NULL;
-    SLIST_FOREACH(entry, &process_list, entries) {
+    LIST_FOREACH(entry, &process_list, entries) {
         if (entry->pid == pid) {
-            char* procpath = OSMalloc(sizeof(char) * MAXPATHLEN+1, return_mallocTag());
-            memset(procpath, 0, sizeof(char) * MAXPATHLEN+1);
-            if (procpath == NULL) {
+            *path_ptr = OSMalloc(MAXPATHLEN, return_mallocTag());
+            //char* procpath = OSMalloc(sizeof(char) * MAXPATHLEN+1, return_mallocTag());
+            if (path_ptr == NULL) {
+                lck_mtx_unlock(proc_list_lock);
                 LOG_ERROR("Could not allocate memory.");
+                return ENOMEM;
             }
-            /* entry->procname is already '\0' terminated. */
-            strlcpy(procpath, entry->procname, sizeof(entry->procname));
-            return procpath;
+            strlcpy(*path_ptr, entry->procname, MAXPATHLEN-1);
+            
+            lck_mtx_unlock(proc_list_lock);
+            return 0;
         }
     }
-    return NULL;
+    lck_mtx_unlock(proc_list_lock);
+    return 1;
+
 }
 
 /* Registers TrustedBSD MAC policy for ShellGuard. */
 kern_return_t register_mac_policy(void *d)
 {
-    SLIST_INIT(&process_list);
+    lck_grp_attr_t	*grp_attrib = NULL;
+    lck_attr_t		*lck_attrb  = NULL;
+    lck_grp_t		*lck_group  = NULL;
+    
+    grp_attrib = lck_grp_attr_alloc_init();
+    lck_group = lck_grp_alloc_init("mbuf_tag_allocate_id", grp_attrib);
+    lck_grp_attr_free(grp_attrib);
+    lck_attrb = lck_attr_alloc_init();
+    
+    proc_list_lock = lck_mtx_alloc_init(lck_group, lck_attrb);
+    
+    lck_grp_free(lck_group);
+    lck_attr_free(lck_attrb);
+    
+    
+    LIST_INIT(&process_list);
     if (mac_policy_register(&shellguard_policy_conf, &shellguard_handle, d) != KERN_SUCCESS) {
         LOG_ERROR("Failed to start ShellGuard TrustedBSD module!");
         cleanup_list_structure();
