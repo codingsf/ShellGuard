@@ -230,7 +230,7 @@ uint32_t is_shell_blocked(const char* path) {
     shell_entry_t *sn;
     lck_mtx_lock(shelllist_lock);
     for (sn = LIST_FIRST(shells); sn != NULL; sn = LIST_NEXT(sn, entries)) {
-        if (strncmp(sn->shell, path, strlen(sn->shell)) == 0) {
+        if (strncmp(sn->shell, path, MAXPATHLEN) == 0) {
             LOG_DEBUG("Shell %s is blacklisted.", path);
             lck_mtx_unlock(shelllist_lock);
             return TRUE;

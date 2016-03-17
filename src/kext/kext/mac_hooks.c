@@ -25,8 +25,7 @@
 #include <sys/queue.h>
 #include <IOKit/IOLib.h>
 
-
-
+static const char   XPCPROXY[]      = "/usr/libexec/xpcproxy";
 extern int32_t      state;
 /* This mutex protects the LIST that holds the path's processes. */
 static lck_mtx_t    *proc_list_lock = NULL;
@@ -94,8 +93,8 @@ static int hook_exec(kauth_cred_t cred,
     /* Some vars we need. */
     int32_t action = ALLOW;
     int32_t path_length = MAXPATHLEN;
-    char procname[MAXPATHLEN+1] = {0};
-    char path[MAXPATHLEN+1]     = {0};
+    char procname[MAXPATHLEN] = {0};
+    char path[MAXPATHLEN]     = {0};
     pid_t pid = -1;
     pid_t ppid = -1;
     char* procpath = NULL;
@@ -111,6 +110,11 @@ static int hook_exec(kauth_cred_t cred,
     proc_name(pid, procname, sizeof(procname));
     
     LOG_DEBUG("New process: %s, pid: %d, ppid: %d.\n", path, pid, ppid);
+    
+    /* Allow process executions from xpcproxy. */
+    if (strcmp(path, XPCPROXY) == 0) {
+        return ALLOW;
+    }
     store_new_process(path, pid, ppid);
     
     switch (state) {
@@ -125,7 +129,8 @@ static int hook_exec(kauth_cred_t cred,
                     /* Send message to userland. */
                     send_to_userspace(path, procpath, COMPLAINING);
                     /* Also kill the malicious parent that tries to spawn the shell. */
-                    proc_signal(pid, SIGKILL);
+                    if ((pid != 1) && (pid != 0))
+                        proc_signal(pid, SIGKILL);
                 }
             }
             break;
@@ -162,6 +167,7 @@ kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid)
     process_t *iterator = NULL;
     LIST_FOREACH(iterator, &process_list, entries) {
         if (iterator->pid == pid) {
+            LOG_DEBUG("There is a process with the same PID. Removing.");
             /* There is a process with the same PID. Reuse of PID means the previous process 
              * does not exsist anymore.
              */
@@ -175,7 +181,7 @@ kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid)
         lck_mtx_unlock(proc_list_lock);
         return KERN_FAILURE;
     }
-    //memset(new_entry, 0, sizeof(process_t));
+    memset(new_entry, 0, sizeof(process_t));
     new_entry->pid = pid;
     new_entry->ppid = ppid;
     strlcpy(new_entry->procname, procname, MAXPATHLEN);
