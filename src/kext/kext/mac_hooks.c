@@ -44,8 +44,8 @@ typedef struct process_t {
 
 kern_return_t cleanup_list_structure(void);
 kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid);
+kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode);
 int32_t get_process_path(pid_t pid, char** path_ptr);
-
 
 static int hook_exec(kauth_cred_t cred,
                      struct vnode *vp,
@@ -121,13 +121,9 @@ static int hook_exec(kauth_cred_t cred,
                 }
                 action = filter(procname, procpath);
                 if (action == DENY) {
-                    LOG_INFO("Blocking execution of %s by %s.", path, procpath);
-                    LOG_INFO("Killing (likely) malicious parent process.");
+                    LOG_INFO("Blocking execution of %s by %s.\n Killing (likely) malicious parent process.", path, procpath);
                     /* Send message to userland. */
-                    kern_space_info_message kern_info_m = {0};
-                    snprintf(kern_info_m.message, sizeof(kern_info_m.message) - 4, "%s;%s;", procpath, path);
-                    kern_info_m.mode = ENFORCING;
-                    queue_userland_data(&kern_info_m);
+                    send_to_userspace(path, procpath, COMPLAINING);
                     /* Also kill the malicious parent that tries to spawn the shell. */
                     proc_signal(pid, SIGKILL);
                 }
@@ -140,14 +136,9 @@ static int hook_exec(kauth_cred_t cred,
                 }
                 action = filter(procname, path);
                 if (action == DENY) {
-                    LOG_INFO("Complaining: execution of %s by %s.", path, procname);
-                    LOG_INFO("Would kill (likely) malicious parent process.");
-                    /* Also kill the malicious parent that tries to spawn the shell. */
+                    LOG_INFO("Complaining: execution of %s by %s.\n Would kill (likely) malicious parent process.", path, procname);
                     /* Send message to userland. */
-                    kern_space_info_message kern_info_m = {0};
-                    snprintf(kern_info_m.message, sizeof(kern_info_m.message) - 4, "%s;%s;", procpath, path);
-                    kern_info_m.mode = COMPLAINING;
-                    queue_userland_data(&kern_info_m);
+                    send_to_userspace(path, procpath, COMPLAINING);
                     /* Eventually allow the action, because we will only complain. */
                     action = ALLOW;
                 }
@@ -155,13 +146,11 @@ static int hook_exec(kauth_cred_t cred,
             break;
         default:
             break;
-
     }
     
     if (procpath != NULL) {
         OSFree(procpath, MAXPATHLEN, return_mallocTag());
     }
-
     return action;
 }
 
@@ -186,10 +175,10 @@ kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid)
         lck_mtx_unlock(proc_list_lock);
         return KERN_FAILURE;
     }
-    memset(new_entry, 0, sizeof(process_t));
+    //memset(new_entry, 0, sizeof(process_t));
     new_entry->pid = pid;
     new_entry->ppid = ppid;
-    strlcpy(new_entry->procname, procname, sizeof(new_entry->procname));
+    strlcpy(new_entry->procname, procname, MAXPATHLEN);
     LIST_INSERT_HEAD(&process_list, new_entry, entries);
     
     lck_mtx_unlock(proc_list_lock);
@@ -233,7 +222,7 @@ int32_t get_process_path(pid_t pid, char** path_ptr)
                 LOG_ERROR("Could not allocate memory.");
                 return ENOMEM;
             }
-            strlcpy(*path_ptr, entry->procname, MAXPATHLEN-1);
+            strlcpy(*path_ptr, entry->procname, MAXPATHLEN);
             
             lck_mtx_unlock(proc_list_lock);
             return 0;
@@ -244,12 +233,23 @@ int32_t get_process_path(pid_t pid, char** path_ptr)
 
 }
 
+/* Sends message/event to userspace over socket. */
+kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode)
+{
+    kern_space_info_message kern_info_m = {0};
+    snprintf(kern_info_m.message, sizeof(kern_info_m.message) - 4, "%s;%s;", procpath, path);
+    kern_info_m.mode = mode;
+    queue_userland_data(&kern_info_m);
+    return KERN_SUCCESS;
+}
+
+
 /* Registers TrustedBSD MAC policy for ShellGuard. */
 kern_return_t register_mac_policy(void *d)
 {
-    lck_grp_attr_t	*grp_attrib = NULL;
-    lck_attr_t		*lck_attrb  = NULL;
-    lck_grp_t		*lck_group  = NULL;
+    lck_grp_attr_t*	grp_attrib = NULL;
+    lck_attr_t*		lck_attrb  = NULL;
+    lck_grp_t*		lck_group  = NULL;
     
     grp_attrib = lck_grp_attr_alloc_init();
     lck_group = lck_grp_alloc_init("mbuf_tag_allocate_id", grp_attrib);

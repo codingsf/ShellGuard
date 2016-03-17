@@ -14,8 +14,8 @@ class ConfigLoader {
     let PROCNAME        = 0
     let SHELL           = 1
     
-    let MAX_PROC_LEN    = 255
-    let MAX_PATH_LEN    = 255
+    let MAX_PROC_LEN    = 1023
+    let MAX_PATH_LEN    = 1023
 
     /* Singleton. This prevents others from using the default '()' initializer for this class. */
     static let sharedInstance = ConfigLoader()

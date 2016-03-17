@@ -9,13 +9,13 @@
 #include <libkern/libkern.h>
 
 typedef struct white_entry_t {
-    char        procname[MAXPATHLEN+1];
-    char        shell[MAXPATHLEN+1];
+    char        procname[MAXPATHLEN];
+    char        shell[MAXPATHLEN];
     LIST_ENTRY(white_entry_t) entries;
 } white_entry_t;
 
 typedef struct shell_entry_t {
-    char        shell[MAXPATHLEN+1];
+    char        shell[MAXPATHLEN];
     LIST_ENTRY(shell_entry_t) entries;
 } shell_entry_t;
 
