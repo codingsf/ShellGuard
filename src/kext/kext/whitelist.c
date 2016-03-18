@@ -207,10 +207,7 @@ uint32_t filter(char* proc, char* path) {
     lck_mtx_lock(whitelist_lock);
     /* Loop thru all the whitelist */
     for (rn = LIST_FIRST(whitelist); rn != NULL; rn = LIST_NEXT(rn, entries)) {
-        /* Check if there is a match with entries in the whitelist. Both are '\0' terminated.
-         * For some very odd reason strncmp cause kernel panic here, seemingly overwriting other
-         * processes memory. 
-         */
+        /* Check if there is a match with entries in the whitelist. Both are '\0' terminated. */
         if ((strncmp(rn->procname, proc, MAXPATHLEN) == 0)       &&
             (strncmp(rn->shell,    path, MAXPATHLEN) == 0)       ) {
             /* there is a match, so allow the exec of the shell. */

@@ -123,12 +123,12 @@ static int hook_exec(kauth_cred_t cred,
                 if (get_process_path(ppid, &procpath) != 0) {
                     procpath = path;
                 }
-                action = filter(procname, procpath);
+                action = filter(path, procpath);
                 if (action == DENY) {
                     LOG_INFO("Blocking execution of %s by %s.\n Killing (likely) malicious parent process.", path, procpath);
                     /* Send message to userland. */
-                    send_to_userspace(path, procpath, COMPLAINING);
-                    /* Also kill the malicious parent that tries to spawn the shell. */
+                    send_to_userspace(path, procpath, ENFORCING);
+                    /* Also kill the malicious parent (apart from launchd or kernel) that tries to spawn the shell. */
                     if ((pid != 1) && (pid != 0))
                         proc_signal(pid, SIGKILL);
                 }
