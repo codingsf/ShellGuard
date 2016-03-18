@@ -12,7 +12,7 @@ class StatusMenuController: NSObject {
         case COMPLAINING_OFF    = 8
     }
     
-    let POLICY_FILE_LOCATION = "/Users/Shared/whitelisted.json"
+    let POLICY_FILE_LOCATION = "/Users/Shared/SG_config.json"
     
     let DARK        = true
     let ENABLED     = true

@@ -6,7 +6,7 @@ ShellGuard is written in Swift :smile: and C :smiling_imp:.
 
 
 ## ShellGuard structure
-ShellGuard consists of a kernel extension and a userspace client that communicate through a `PF_SYSTEM` socket. The kext uses OS X's TrustedBSD framework to hook the execution system calls and notified of process executions. Based on the policies defined in the `whitelist.json` file, the ShellGuard allows or denies the execution of the shell.
+ShellGuard consists of a kernel extension and a userspace client that communicate through a `PF_SYSTEM` socket. The kext uses OS X's TrustedBSD framework to hook the execution system calls and notified of process executions. Based on the policies defined in the `SG_config.json` file, the ShellGuard allows or denies the execution of the shell.
 
 The ShellGuard daemon/client that remains in userspace and runs in privileged mode, which is why I have chosen to write it in Swift, a memory safe language. The daemon parses the ShellGuard policy file (JSON) and passes these rules to the kernel extension.
 

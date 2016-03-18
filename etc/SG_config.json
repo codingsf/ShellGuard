@@ -1,0 +1,13 @@
+[
+	{
+		"black_listed_shells" : ["/bin/bash", "/bin/sh"]
+    },
+    {
+        "process_name" : "/bin/sh",
+        "shells" : ["/bin/bash", "/bin/sh"]
+    },
+    {
+        "process_name" : "/bin/bash",
+        "shells" : ["/bin/sh"]
+    }    
+]
