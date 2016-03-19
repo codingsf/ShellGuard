@@ -19,7 +19,8 @@ int32_t check_duplicate_shell(white_entry *r);
  * Initializes first entry of the lists. This list is used to store all the blacklisted shells as well as
  * the whitelisted processes for ShellGuard. The list is looped through on *every* process exec.
  */
-kern_return_t init_list_structs() {
+kern_return_t init_list_structs()
+{
     if (return_mallocTag() == NULL) {
         LOG_ERROR("Error while allocating memory for list structure. AllocTag is NULL.");
         return KERN_FAILURE;
@@ -55,7 +56,8 @@ kern_return_t init_list_structs() {
 /*
  * Inserts a shell into the list of blacklisted shells.
  */
-kern_return_t insert_shell_entry(white_entry *e) {
+kern_return_t insert_shell_entry(white_entry *e)
+{
     
     lck_mtx_lock(shelllist_lock);
     
@@ -87,12 +89,13 @@ kern_return_t insert_shell_entry(white_entry *e) {
 /*
  * Inserts a entry into the whitelist.
  */
-kern_return_t insert_whitelist_entry(white_entry *e) {
+kern_return_t insert_whitelist_entry(white_entry *e)
+{
     
     lck_mtx_lock(whitelist_lock);
     
     if (check_duplicate(e)) {
-        LOG_DEBUG("Received deplicate entry: %s, %s", e->procname, e->shell);
+        LOG_DEBUG("Received duplicate entry: %s, %s", e->procname, e->shell);
         lck_mtx_unlock(whitelist_lock);
         return KERN_ALREADY_IN_SET;
     }
@@ -121,7 +124,8 @@ kern_return_t insert_whitelist_entry(white_entry *e) {
 /*
  * Remove the first entry of the lists, initialized in init_list_structs().
  */
-kern_return_t remove_list_structs(void) {
+kern_return_t remove_list_structs(void)
+{
     lck_mtx_lock(whitelist_lock);
     remove_white_list();
     lck_mtx_unlock(whitelist_lock);
@@ -137,7 +141,8 @@ kern_return_t remove_list_structs(void) {
  * Remove all the entries in the list.
  * Called under mutex lock.
  */
-void remove_white_list(void) {
+void remove_white_list(void)
+{
     while(!LIST_EMPTY(whitelist)) {
         white_entry_t *new_entry = LIST_FIRST(whitelist);
         LOG_DEBUG("Deleting entry: %s, %s", new_entry->procname, new_entry->shell);
@@ -150,7 +155,8 @@ void remove_white_list(void) {
  * Remove all the entries in the list.
  * Called under mutex lock.
  */
-void remove_shells_list(void) {
+void remove_shells_list(void)
+{
     while(!LIST_EMPTY(shells)) {
         shell_entry_t *entry = LIST_FIRST(shells);
         LOG_DEBUG("Deleting shell: %s", entry->shell);
@@ -165,7 +171,8 @@ void remove_shells_list(void) {
  * Return TRUE iff there is already a same entry in the list.
  * This function is called under mutex lock.
  */
-int32_t check_duplicate(white_entry *r) {
+int32_t check_duplicate(white_entry *r)
+{
     white_entry_t *rn;
     for (rn = LIST_FIRST(whitelist); rn != NULL; rn = LIST_NEXT(rn, entries)) {
         // strmcp is safe here: both rn and r contain '\0' since they are all copied using strlcpy
@@ -182,7 +189,8 @@ int32_t check_duplicate(white_entry *r) {
  * Return TRUE iff there is already a same shell in the list.
  * This function is called under mutex lock.
  */
-int32_t check_duplicate_shell(white_entry *r) {
+int32_t check_duplicate_shell(white_entry *r)
+{
     shell_entry_t *sn;
     for (sn = LIST_FIRST(shells); sn != NULL; sn = LIST_NEXT(sn, entries)) {
         // strmcp is safe here: both rn and r contain '\0' since they are all copied using strlcpy
@@ -200,7 +208,8 @@ int32_t check_duplicate_shell(white_entry *r) {
 /*
  * Heart of ShellGuard.
  */
-uint32_t filter(char* proc, char* path) {
+uint32_t filter(char* proc, char* path)
+{
     uint32_t action = DENY;
     white_entry_t *rn;
     
@@ -223,7 +232,8 @@ uint32_t filter(char* proc, char* path) {
 /*
  * Checks if the shell is in the list of blocked shells. Returns TRUE iff it is blocked.
  */
-uint32_t is_shell_blocked(const char* path) {
+uint32_t is_shell_blocked(const char* path)
+{
     shell_entry_t *sn;
     lck_mtx_lock(shelllist_lock);
     for (sn = LIST_FIRST(shells); sn != NULL; sn = LIST_NEXT(sn, entries)) {

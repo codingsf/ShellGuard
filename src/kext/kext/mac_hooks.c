@@ -25,6 +25,8 @@
 #include <sys/queue.h>
 #include <IOKit/IOLib.h>
 
+
+
 static const char   XPCPROXY[]      = "/usr/libexec/xpcproxy";
 extern int32_t      state;
 /* This mutex protects the LIST that holds the path's processes. */
@@ -32,8 +34,8 @@ static lck_mtx_t    *proc_list_lock = NULL;
 static SInt32       g_activation_count = 0;
 
 
-LIST_HEAD(processes_LIST, process_t);
-static struct processes_LIST process_list;
+LIST_HEAD(processes_LIST_head, process_t) process_list_head = LIST_HEAD_INITIALIZER(process_list_head);
+//static struct processes_LIST_head *process_list;
 
 typedef struct process_t {
     char    procname[MAXPATHLEN+1];
@@ -173,7 +175,8 @@ kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid)
     lck_mtx_lock(proc_list_lock);
     
     process_t *iterator = NULL;
-    LIST_FOREACH(iterator, &process_list, entries) {
+    process_t *next_iterator = NULL;
+    LIST_FOREACH_SAFE(iterator, &process_list_head, entries, next_iterator) {
         if (iterator->pid == pid) {
             LOG_DEBUG("There is a process with the same PID. Removing.");
             /* There is a process with the same PID. Reuse of PID means the previous process 
@@ -193,7 +196,7 @@ kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid)
     new_entry->pid = pid;
     new_entry->ppid = ppid;
     strlcpy(new_entry->procname, procname, MAXPATHLEN);
-    LIST_INSERT_HEAD(&process_list, new_entry, entries);
+    LIST_INSERT_HEAD(&process_list_head, new_entry, entries);
     
     lck_mtx_unlock(proc_list_lock);
     return KERN_SUCCESS;
@@ -207,7 +210,7 @@ kern_return_t cleanup_list_structure(void)
     
     process_t *entry = NULL;
     process_t *next_entry = NULL;
-    LIST_FOREACH_SAFE(entry, &process_list, entries, next_entry) {
+    LIST_FOREACH_SAFE(entry, &process_list_head, entries, next_entry) {
         LIST_REMOVE(entry, entries);
         OSFree(entry, sizeof(process_t), return_mallocTag());
     }
@@ -227,10 +230,10 @@ int32_t get_process_path(pid_t pid, char** path_ptr)
     lck_mtx_lock(proc_list_lock);
     
     process_t *entry = NULL;
-    LIST_FOREACH(entry, &process_list, entries) {
+    process_t *next_entry = NULL;
+    LIST_FOREACH_SAFE(entry, &process_list_head, entries, next_entry) {
         if (entry->pid == pid) {
             *path_ptr = OSMalloc(MAXPATHLEN, return_mallocTag());
-            //char* procpath = OSMalloc(sizeof(char) * MAXPATHLEN+1, return_mallocTag());
             if (path_ptr == NULL) {
                 lck_mtx_unlock(proc_list_lock);
                 LOG_ERROR("Could not allocate memory.");
@@ -276,7 +279,7 @@ kern_return_t register_mac_policy(void *d)
     lck_attr_free(lck_attrb);
     
     
-    LIST_INIT(&process_list);
+    LIST_INIT(&process_list_head);
     if (mac_policy_register(&shellguard_policy_conf, &shellguard_handle, d) != KERN_SUCCESS) {
         LOG_ERROR("Failed to start ShellGuard TrustedBSD module!");
         cleanup_list_structure();
@@ -294,8 +297,6 @@ kern_return_t unregister_mac_policy(void *d)
         return KERN_FAILURE;
     }
     
-    cleanup_list_structure();
-    
     /* Wait for any threads within hook_exec to stop using hook_exec. */
     do {
         struct timespec one_sec;
@@ -303,6 +304,8 @@ kern_return_t unregister_mac_policy(void *d)
         one_sec.tv_nsec = 0;
         (void) msleep(&g_activation_count, NULL, PUSER, "com.shellguard.unregister_policy", &one_sec);
     } while (g_activation_count > 0);
+    
+    cleanup_list_structure();
     
     return KERN_SUCCESS;
 }
