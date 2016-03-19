@@ -1,4 +1,4 @@
-![shellguard_logo](http://cl.ly/fN4F/shellguard_logo.png)
+<img src="http://cl.ly/fSwN/logo_large.png" width="100">
 
 Security is all about layers. ShellGuard aims to provide an extra generic layer of security by guarding the execution of a shell process. Research shows that OS X malware is strongly dependent on a shell process to harm the system. ShellGuard prevents the execution of shells by unknown processes.
 
