@@ -25,7 +25,7 @@ typedef struct {
 
 
 typedef struct  {
-    char            credentals[64];
+    char          credentals[64];
     white_entry   entry;
 } userspace_control_message;
 

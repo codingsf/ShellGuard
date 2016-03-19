@@ -169,8 +169,8 @@ int32_t check_duplicate(white_entry *r) {
     white_entry_t *rn;
     for (rn = LIST_FIRST(whitelist); rn != NULL; rn = LIST_NEXT(rn, entries)) {
         // strmcp is safe here: both rn and r contain '\0' since they are all copied using strlcpy
-        if ((strcmp(rn->procname, r->procname) == 0) &&
-            (strcmp(rn->shell, r->shell)       == 0) ) {
+        if ((strncmp(rn->procname,  r->procname, MAXPATHLEN) == 0) &&
+            (strncmp(rn->shell,     r->shell   , MAXPATHLEN) == 0) ) {
             return TRUE;
         }
     }
@@ -186,7 +186,7 @@ int32_t check_duplicate_shell(white_entry *r) {
     shell_entry_t *sn;
     for (sn = LIST_FIRST(shells); sn != NULL; sn = LIST_NEXT(sn, entries)) {
         // strmcp is safe here: both rn and r contain '\0' since they are all copied using strlcpy
-        if (strcmp(sn->shell, r->shell) == 0) {
+        if (strncmp(sn->shell, r->shell, MAXPATHLEN) == 0) {
             return TRUE;
         }
     }

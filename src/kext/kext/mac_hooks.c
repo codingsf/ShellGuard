@@ -29,6 +29,7 @@ static const char   XPCPROXY[]      = "/usr/libexec/xpcproxy";
 extern int32_t      state;
 /* This mutex protects the LIST that holds the path's processes. */
 static lck_mtx_t    *proc_list_lock = NULL;
+static SInt32       g_activation_count = 0;
 
 
 LIST_HEAD(processes_LIST, process_t);
@@ -99,10 +100,13 @@ static int hook_exec(kauth_cred_t cred,
     pid_t ppid = -1;
     char* procpath = NULL;
     
+    /* Keep track of how many threads currently use this function. */
+    (void) OSIncrementAtomic(&g_activation_count);
+    
     if (vn_getpath(vp, path, &path_length) != 0 ) {
         LOG_ERROR("Can't build path to vnode.");
         /* Now what...? Just allowing the action for now... */
-        return ALLOW;
+        goto exit;
     }
     
     pid = proc_selfpid();
@@ -113,7 +117,7 @@ static int hook_exec(kauth_cred_t cred,
     
     /* Allow process executions from xpcproxy. */
     if (strcmp(path, XPCPROXY) == 0) {
-        return ALLOW;
+        goto exit;
     }
     store_new_process(path, pid, ppid);
     
@@ -153,9 +157,13 @@ static int hook_exec(kauth_cred_t cred,
             break;
     }
     
+exit:
     if (procpath != NULL) {
         OSFree(procpath, MAXPATHLEN, return_mallocTag());
     }
+    
+    (void) OSDecrementAtomic(&g_activation_count);
+    
     return action;
 }
 
@@ -285,8 +293,17 @@ kern_return_t unregister_mac_policy(void *d)
         LOG_ERROR("Failed to unload ShellGuard TrustedBSD module: %d.", res);
         return KERN_FAILURE;
     }
-    IOSleep(5000);
+    
     cleanup_list_structure();
+    
+    /* Wait for any threads within hook_exec to stop using hook_exec. */
+    do {
+        struct timespec one_sec;
+        one_sec.tv_sec  = 1;
+        one_sec.tv_nsec = 0;
+        (void) msleep(&g_activation_count, NULL, PUSER, "com.shellguard.unregister_policy", &one_sec);
+    } while (g_activation_count > 0);
+    
     return KERN_SUCCESS;
 }
 
