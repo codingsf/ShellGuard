@@ -22,7 +22,7 @@
 #include <security/mac.h>
 #include <security/mac_policy.h>
 #include <sys/vnode.h>
-#include <sys/queue.h>
+//#include <sys/queue.h>
 #include <IOKit/IOLib.h>
 
 

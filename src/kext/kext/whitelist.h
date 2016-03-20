@@ -4,8 +4,8 @@
 
 
 #include "shared_data.h"
+#include "definitions.h"
 
-#include <sys/queue.h>
 #include <libkern/libkern.h>
 
 typedef struct white_entry_t {
@@ -19,8 +19,8 @@ typedef struct shell_entry_t {
     LIST_ENTRY(shell_entry_t) entries;
 } shell_entry_t;
 
-typedef LIST_HEAD(white_list, white_entry_t) white_list_t;
-typedef LIST_HEAD(black_list, shell_entry_t)  shell_list_t;
+//typedef LIST_HEAD(white_list, white_entry_t) white_list_t;
+//typedef LIST_HEAD(black_list, shell_entry_t)  shell_list_t;
 
 
 

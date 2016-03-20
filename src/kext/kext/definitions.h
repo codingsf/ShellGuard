@@ -6,6 +6,7 @@
 #define ALLOW   0
 #define DENY    1
 
+#include <sys/queue.h>
 
 #if DEBUG
 #define LOG_DEBUG(fmt, ...) printf("[SHELLGUARD DEBUG] " fmt "\n", ## __VA_ARGS__)

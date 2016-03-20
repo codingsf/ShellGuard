@@ -6,8 +6,9 @@
 int32_t             state;
 static lck_mtx_t*   whitelist_lock = NULL;
 static lck_mtx_t*   shelllist_lock = NULL;
-white_list_t*       whitelist       = NULL;
-shell_list_t*       shells          = NULL;
+
+LIST_HEAD(whitelist_LIST_head, white_entry_t) whitelist_head = LIST_HEAD_INITIALIZER(whitelist_head);
+LIST_HEAD(shelllist_LIST_head, shell_entry_t) shelllist_head = LIST_HEAD_INITIALIZER(shelllist_head);
 
 int32_t check_duplicate(white_entry *r);
 int32_t check_duplicate_shell(white_entry *r);
@@ -25,13 +26,8 @@ kern_return_t init_list_structs()
         LOG_ERROR("Error while allocating memory for list structure. AllocTag is NULL.");
         return KERN_FAILURE;
     }
-    whitelist = OSMalloc(sizeof(white_list_t), return_mallocTag());
-    shells = OSMalloc(sizeof(shell_list_t), return_mallocTag());
-    if ((whitelist == NULL) || (shells == NULL)) {
-        LOG_ERROR("Error while allocating memory for list structures. Not enough memory.");
-        return KERN_FAILURE;
-    }
     
+    /* Initialize mutex locks for the lists. */
     lck_grp_attr_t*	grp_attrib = NULL;
     lck_attr_t*		lck_attrb  = NULL;
     lck_grp_t*		lck_group  = NULL;
@@ -47,8 +43,9 @@ kern_return_t init_list_structs()
     lck_grp_free(lck_group);
     lck_attr_free(lck_attrb);
     
-    LIST_INIT(whitelist);
-    LIST_INIT(shells);
+    /* Initialize list structures. */
+    LIST_INIT(&whitelist_head);
+    LIST_INIT(&shelllist_head);
     return KERN_SUCCESS;
 }
 
@@ -66,7 +63,7 @@ kern_return_t insert_shell_entry(white_entry *e)
         lck_mtx_unlock(shelllist_lock);
         return KERN_ALREADY_IN_SET;
     }
-    shell_entry_t* new_entry = OSMalloc(sizeof(shell_entry_t), return_mallocTag());
+    shell_entry_t *new_entry = OSMalloc(sizeof(shell_entry_t), return_mallocTag());
     if (new_entry == NULL) {
         LOG_ERROR("Error while allocating memory for shell structure. Not enough memory.");
         lck_mtx_unlock(shelllist_lock);
@@ -77,7 +74,7 @@ kern_return_t insert_shell_entry(white_entry *e)
     if (e->shell[0] != 0){
         strlcpy(new_entry->shell, e->shell, MAXPATHLEN);
         LOG_DEBUG("Received black listed shell: %s", new_entry->shell);
-        LIST_INSERT_HEAD(shells, new_entry, entries);
+        LIST_INSERT_HEAD(&shelllist_head, new_entry, entries);
     } else {
         LOG_DEBUG("Received incomplete blacklisted shell: %s. Ignoring.", e->shell);
     }
@@ -113,7 +110,7 @@ kern_return_t insert_whitelist_entry(white_entry *e)
         strlcpy(new_entry->shell, e->shell, MAXPATHLEN);
         
         LOG_DEBUG("Received whitelist entry: %s, %s", new_entry->procname, new_entry->shell);
-        LIST_INSERT_HEAD(whitelist, new_entry, entries);
+        LIST_INSERT_HEAD(&whitelist_head, new_entry, entries);
     } else {
         LOG_DEBUG("Received incomplete whitelist entry %s, %s. Ignoring.", e->procname, e->shell);
     }
@@ -143,8 +140,8 @@ kern_return_t remove_list_structs(void)
  */
 void remove_white_list(void)
 {
-    while(!LIST_EMPTY(whitelist)) {
-        white_entry_t *new_entry = LIST_FIRST(whitelist);
+    while(!LIST_EMPTY(&whitelist_head)) {
+        white_entry_t *new_entry = LIST_FIRST(&whitelist_head);
         LOG_DEBUG("Deleting entry: %s, %s", new_entry->procname, new_entry->shell);
         LIST_REMOVE(new_entry, entries);
         OSFree(new_entry, sizeof(white_entry_t), return_mallocTag());
@@ -157,8 +154,8 @@ void remove_white_list(void)
  */
 void remove_shells_list(void)
 {
-    while(!LIST_EMPTY(shells)) {
-        shell_entry_t *entry = LIST_FIRST(shells);
+    while(!LIST_EMPTY(&shelllist_head)) {
+        shell_entry_t *entry = LIST_FIRST(&shelllist_head);
         LOG_DEBUG("Deleting shell: %s", entry->shell);
         LIST_REMOVE(entry, entries);
         OSFree(entry, sizeof(shell_entry_t), return_mallocTag());
@@ -173,11 +170,12 @@ void remove_shells_list(void)
  */
 int32_t check_duplicate(white_entry *r)
 {
-    white_entry_t *rn;
-    for (rn = LIST_FIRST(whitelist); rn != NULL; rn = LIST_NEXT(rn, entries)) {
-        // strmcp is safe here: both rn and r contain '\0' since they are all copied using strlcpy
-        if ((strncmp(rn->procname,  r->procname, MAXPATHLEN) == 0) &&
-            (strncmp(rn->shell,     r->shell   , MAXPATHLEN) == 0) ) {
+    white_entry_t *entry;
+    white_entry_t *next_entry;
+
+    LIST_FOREACH_SAFE(entry, &whitelist_head, entries, next_entry) {
+        if ((strncmp(entry->procname,  r->procname, MAXPATHLEN) == 0) &&
+            (strncmp(entry->shell,     r->shell   , MAXPATHLEN) == 0) ) {
             return TRUE;
         }
     }
@@ -191,10 +189,11 @@ int32_t check_duplicate(white_entry *r)
  */
 int32_t check_duplicate_shell(white_entry *r)
 {
-    shell_entry_t *sn;
-    for (sn = LIST_FIRST(shells); sn != NULL; sn = LIST_NEXT(sn, entries)) {
-        // strmcp is safe here: both rn and r contain '\0' since they are all copied using strlcpy
-        if (strncmp(sn->shell, r->shell, MAXPATHLEN) == 0) {
+    shell_entry_t *entry;
+    shell_entry_t *next_entry;
+
+    LIST_FOREACH_SAFE(entry, &shelllist_head, entries, next_entry) {
+        if (strncmp(entry->shell, r->shell, MAXPATHLEN) == 0) {
             return TRUE;
         }
     }
@@ -211,14 +210,15 @@ int32_t check_duplicate_shell(white_entry *r)
 uint32_t filter(char* proc, char* path)
 {
     uint32_t action = DENY;
-    white_entry_t *rn;
+    white_entry_t *entry;
+    white_entry_t *next_entry;
     
     lck_mtx_lock(whitelist_lock);
+    
     /* Loop thru all the whitelist */
-    for (rn = LIST_FIRST(whitelist); rn != NULL; rn = LIST_NEXT(rn, entries)) {
-        /* Check if there is a match with entries in the whitelist. Both are '\0' terminated. */
-        if ((strncmp(rn->procname, proc, MAXPATHLEN) == 0)       &&
-            (strncmp(rn->shell,    path, MAXPATHLEN) == 0)       ) {
+    LIST_FOREACH_SAFE(entry, &whitelist_head, entries, next_entry) {
+        if ((strncmp(entry->procname, proc, MAXPATHLEN) == 0)       &&
+            (strncmp(entry->shell,    path, MAXPATHLEN) == 0)       ) {
             /* there is a match, so allow the exec of the shell. */
             LOG_DEBUG("%s by %s is whitelisted.", path, proc);
             action = ALLOW;
@@ -234,10 +234,12 @@ uint32_t filter(char* proc, char* path)
  */
 uint32_t is_shell_blocked(const char* path)
 {
-    shell_entry_t *sn;
+    shell_entry_t *entry;
+    shell_entry_t *next_entry;
     lck_mtx_lock(shelllist_lock);
-    for (sn = LIST_FIRST(shells); sn != NULL; sn = LIST_NEXT(sn, entries)) {
-        if (strncmp(sn->shell, path, MAXPATHLEN) == 0) {
+    
+    LIST_FOREACH_SAFE(entry, &shelllist_head, entries, next_entry) {
+        if (strncmp(entry->shell, path, MAXPATHLEN) == 0) {
             LOG_DEBUG("Shell %s is blacklisted.", path);
             lck_mtx_unlock(shelllist_lock);
             return TRUE;
