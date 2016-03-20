@@ -69,7 +69,7 @@ kern_return_t insert_shell_entry(white_entry *e)
         lck_mtx_unlock(shelllist_lock);
         return KERN_FAILURE;
     }
-    memset(new_entry, 0, sizeof(white_entry_t));
+    memset(new_entry, 0, sizeof(shell_entry_t));
     // this data should be treated as untrusted. More checks needed...
     if (e->shell[0] != 0){
         strlcpy(new_entry->shell, e->shell, MAXPATHLEN);
@@ -141,10 +141,10 @@ kern_return_t remove_list_structs(void)
 void remove_white_list(void)
 {
     while(!LIST_EMPTY(&whitelist_head)) {
-        white_entry_t *new_entry = LIST_FIRST(&whitelist_head);
-        LOG_DEBUG("Deleting entry: %s, %s", new_entry->procname, new_entry->shell);
-        LIST_REMOVE(new_entry, entries);
-        OSFree(new_entry, sizeof(white_entry_t), return_mallocTag());
+        white_entry_t *entry = LIST_FIRST(&whitelist_head);
+        LOG_DEBUG("Deleting entry: %s, %s", entry->procname, entry->shell);
+        LIST_REMOVE(entry, entries);
+        OSFree(entry, sizeof(white_entry_t), return_mallocTag());
     }
 }
 

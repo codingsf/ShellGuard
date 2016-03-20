@@ -22,7 +22,6 @@
 #include <security/mac.h>
 #include <security/mac_policy.h>
 #include <sys/vnode.h>
-//#include <sys/queue.h>
 #include <IOKit/IOLib.h>
 
 
@@ -35,7 +34,6 @@ static SInt32       g_activation_count = 0;
 
 
 LIST_HEAD(processes_LIST_head, process_t) process_list_head = LIST_HEAD_INITIALIZER(process_list_head);
-//static struct processes_LIST_head *process_list;
 
 typedef struct process_t {
     char    procname[MAXPATHLEN+1];
