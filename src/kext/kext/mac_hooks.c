@@ -95,15 +95,15 @@ static int hook_exec(kauth_cred_t cred,
     int32_t action = ALLOW;
     int32_t path_length = MAXPATHLEN;
     char procname[MAXPATHLEN] = {0};
-    char path[MAXPATHLEN]     = {0};
+    char procpath[MAXPATHLEN] = {0};
     pid_t pid = -1;
     pid_t ppid = -1;
-    char* procpath = NULL;
+    char* pprocpath = NULL;
     
     /* Keep track of how many threads currently use this function. */
     (void) OSIncrementAtomic(&g_activation_count);
     
-    if (vn_getpath(vp, path, &path_length) != 0 ) {
+    if (vn_getpath(vp, procpath, &path_length) != 0 ) {
         LOG_ERROR("Can't build path to vnode.");
         /* Now what...? Just allowing the action for now... */
         goto exit;
@@ -113,25 +113,29 @@ static int hook_exec(kauth_cred_t cred,
     ppid = proc_selfppid();
     proc_name(pid, procname, sizeof(procname));
     
-    LOG_DEBUG("New process: %s, pid: %d, ppid: %d.\n", path, pid, ppid);
+    LOG_DEBUG("New process: %s, pid: %d, ppid: %d.\n", procpath, pid, ppid);
     
     /* Allow process executions from xpcproxy. */
-    if (strcmp(path, XPCPROXY) == 0) {
+    if (strcmp(procpath, XPCPROXY) == 0) {
         goto exit;
     }
-    store_new_process(path, pid, ppid);
+    store_new_process(procpath, pid, ppid);
     
     switch (state) {
         case ENFORCING:
-            if (is_shell_blocked(path)) {
-                if (get_process_path(ppid, &procpath) != 0) {
-                    procpath = path;
+            if (is_shell_blocked(procpath)) {
+                if (get_process_path(ppid, &pprocpath) != 0) {
+                    /* We don't know the path of the parent process. This is unlikely to happen,
+                     * since ShellGuard starts before pretty much any other userland process (in production env).
+                     * However, in testing phase it may occur processes were already running before we came into the kernel.
+                     */
+                    pprocpath = procpath;
                 }
-                action = filter(path, procpath);
+                action = filter(procpath, pprocpath);
                 if (action == DENY) {
-                    LOG_INFO("Blocking execution of %s by %s.\n Killing (likely) malicious parent process.", path, procpath);
+                    LOG_INFO("Blocking execution of %s by %s.\n Killing (likely) malicious parent process.", procpath, pprocpath);
                     /* Send message to userland. */
-                    send_to_userspace(path, procpath, ENFORCING);
+                    send_to_userspace(procpath, pprocpath, ENFORCING);
                     /* Also kill the malicious parent (apart from launchd or kernel) that tries to spawn the shell. */
                     if ((pid != 1) && (pid != 0))
                         proc_signal(pid, SIGKILL);
@@ -139,15 +143,15 @@ static int hook_exec(kauth_cred_t cred,
             }
             break;
         case COMPLAINING:
-            if (is_shell_blocked(path)) {
-                if (get_process_path(ppid, &procpath) != 0) {
-                    procpath = path;
+            if (is_shell_blocked(procpath)) {
+                if (get_process_path(ppid, &pprocpath) != 0) {
+                    pprocpath = procpath;
                 }
-                action = filter(procname, path);
+                action = filter(procname, procpath);
                 if (action == DENY) {
-                    LOG_INFO("Complaining: execution of %s by %s.\n Would kill (likely) malicious parent process.", path, procname);
+                    LOG_INFO("Complaining: execution of %s by %s.\n Would kill (likely) malicious parent process.", procpath, pprocpath);
                     /* Send message to userland. */
-                    send_to_userspace(path, procpath, COMPLAINING);
+                    send_to_userspace(procpath, pprocpath, COMPLAINING);
                     /* Eventually allow the action, because we will only complain. */
                     action = ALLOW;
                 }
@@ -158,7 +162,7 @@ static int hook_exec(kauth_cred_t cred,
     }
     
 exit:
-    if (procpath != NULL) {
+    if (pprocpath != NULL) {
         OSFree(procpath, MAXPATHLEN, return_mallocTag());
     }
     
@@ -176,7 +180,7 @@ kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid)
     process_t *next_iterator = NULL;
     LIST_FOREACH_SAFE(iterator, &process_list_head, entries, next_iterator) {
         if (iterator->pid == pid) {
-            LOG_DEBUG("There is a process with the same PID. Removing.");
+            LOG_DEBUG("There is a process with the same PID %d: %s. Removing.", iterator->pid, iterator->procname);
             /* There is a process with the same PID. Reuse of PID means the previous process 
              * does not exsist anymore.
              */
@@ -222,9 +226,9 @@ kern_return_t cleanup_list_structure(void)
  */
 int32_t get_process_path(pid_t pid, char** path_ptr)
 {
-    if (path_ptr == NULL) {
-        return -1;
-    }
+//    if (path_ptr == NULL) {
+//        return -1;
+//    }
     lck_mtx_lock(proc_list_lock);
     
     process_t *entry = NULL;
