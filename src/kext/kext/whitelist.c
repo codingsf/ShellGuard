@@ -55,9 +55,13 @@ kern_return_t init_list_structs()
  */
 kern_return_t insert_shell_entry(white_entry *e)
 {
-    
     lck_mtx_lock(shelllist_lock);
-    
+    // this data should be treated as untrusted. More checks needed...
+    if (e->shell[0] == 0) {
+        LOG_DEBUG("Received incomplete blacklisted shell: %s. Ignoring.", e->shell);
+        lck_mtx_unlock(shelllist_lock);
+        return KERN_FAILURE;
+    }
     if (check_duplicate_shell(e)) {
         LOG_DEBUG("Received duplicate shell: %s,", e->shell);
         lck_mtx_unlock(shelllist_lock);
@@ -70,14 +74,12 @@ kern_return_t insert_shell_entry(white_entry *e)
         return KERN_FAILURE;
     }
     memset(new_entry, 0, sizeof(shell_entry_t));
-    // this data should be treated as untrusted. More checks needed...
-    if (e->shell[0] != 0){
-        strlcpy(new_entry->shell, e->shell, MAXPATHLEN);
-        LOG_DEBUG("Received black listed shell: %s", new_entry->shell);
-        LIST_INSERT_HEAD(&shelllist_head, new_entry, entries);
-    } else {
-        LOG_DEBUG("Received incomplete blacklisted shell: %s. Ignoring.", e->shell);
-    }
+    
+    strlcpy(new_entry->shell, e->shell, MAXPATHLEN);
+    
+    LOG_DEBUG("Received black listed shell: %s", new_entry->shell);
+    LIST_INSERT_HEAD(&shelllist_head, new_entry, entries);
+    
     lck_mtx_unlock(shelllist_lock);
     return KERN_SUCCESS;
 }
@@ -88,9 +90,13 @@ kern_return_t insert_shell_entry(white_entry *e)
  */
 kern_return_t insert_whitelist_entry(white_entry *e)
 {
-    
     lck_mtx_lock(whitelist_lock);
-    
+    // this data should be treated as untrusted. More checks needed...
+    if ((e->procname[0] == 0) || (e->shell[0] == 0) ) {
+        LOG_DEBUG("Received incomplete whitelist entry %s, %s. Ignoring.", e->procname, e->shell);
+        lck_mtx_unlock(whitelist_lock);
+        return KERN_FAILURE;
+    }
     if (check_duplicate(e)) {
         LOG_DEBUG("Received duplicate entry: %s, %s", e->procname, e->shell);
         lck_mtx_unlock(whitelist_lock);
@@ -103,17 +109,13 @@ kern_return_t insert_whitelist_entry(white_entry *e)
         return KERN_FAILURE;
     }
     memset(new_entry, 0, sizeof(white_entry_t));
-    // this data should be treated as untrusted. More checks needed...
-    if ((e->procname[0] != 0) &&
-        (e->shell[0]    != 0) ){
-        strlcpy(new_entry->procname, e->procname, MAXPATHLEN);
-        strlcpy(new_entry->shell, e->shell, MAXPATHLEN);
-        
-        LOG_DEBUG("Received whitelist entry: %s, %s", new_entry->procname, new_entry->shell);
-        LIST_INSERT_HEAD(&whitelist_head, new_entry, entries);
-    } else {
-        LOG_DEBUG("Received incomplete whitelist entry %s, %s. Ignoring.", e->procname, e->shell);
-    }
+    
+    strlcpy(new_entry->procname, e->procname, MAXPATHLEN);
+    strlcpy(new_entry->shell, e->shell, MAXPATHLEN);
+    
+    LOG_DEBUG("Received whitelist entry: %s, %s", new_entry->procname, new_entry->shell);
+    LIST_INSERT_HEAD(&whitelist_head, new_entry, entries);
+
     lck_mtx_unlock(whitelist_lock);
     return KERN_SUCCESS;
 }
@@ -160,7 +162,6 @@ void remove_shells_list(void)
         LIST_REMOVE(entry, entries);
         OSFree(entry, sizeof(shell_entry_t), return_mallocTag());
     }
-    
 }
 
 /*

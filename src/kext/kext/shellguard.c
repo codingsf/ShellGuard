@@ -23,11 +23,10 @@ kern_return_t shellguard_start(kmod_info_t * ki, void *d)
 {
     kern_return_t status = KERN_SUCCESS;
     gMallocTag = NULL;
-    LOG_INFO("Hi kernel! : )");
-    LOG_INFO("Installing ShellGuard kext controls.\n");
+    LOG_INFO("Hi kernel, ShellGuard is here to protect you! : )");
+    
     install_kext_control();
     
-    LOG_INFO("Initialzing some memory.");
     gMallocTag = OSMalloc_Tagalloc("com.shellguard.memtag", OSMT_DEFAULT);
     if (gMallocTag == NULL) {
         status = KERN_FAILURE;
@@ -49,14 +48,12 @@ kern_return_t shellguard_stop(kmod_info_t *ki, void *d)
     
     unregister_mac_policy(d);
     
-    LOG_INFO("Cleaning up memory.");
     remove_list_structs();
     
     if (gMallocTag != NULL) {
         OSMalloc_Tagfree(gMallocTag);
         gMallocTag = NULL;
     }
-    LOG_INFO("Removing kext control.\n");
     remove_kext_control();
 
     LOG_INFO("We're outta here!\n");

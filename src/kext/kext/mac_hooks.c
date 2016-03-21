@@ -45,7 +45,7 @@ typedef struct process_t {
 kern_return_t cleanup_list_structure(void);
 kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid);
 kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode);
-int32_t get_process_path(pid_t pid, char** path_ptr);
+int32_t get_process_path(pid_t pid, char* path_ptr);
 
 static int hook_exec(kauth_cred_t cred,
                      struct vnode *vp,
@@ -92,13 +92,14 @@ static int hook_exec(kauth_cred_t cred,
                      size_t macpolicyattrlen )
 {
     /* Some vars we need. */
-    int32_t action = ALLOW;
-    int32_t path_length = MAXPATHLEN;
-    char procname[MAXPATHLEN] = {0};
-    char procpath[MAXPATHLEN] = {0};
-    pid_t pid = -1;
-    pid_t ppid = -1;
-    char* pprocpath = NULL;
+    int32_t action              = ALLOW;
+    int32_t path_length         = MAXPATHLEN;
+    char procname[MAXPATHLEN]   = {0};
+    char procpath[MAXPATHLEN]   = {0};
+    char pprocpath[MAXPATHLEN]  = {0};
+    pid_t pid                   = -1;
+    pid_t ppid                  = -1;
+    
     
     /* Keep track of how many threads currently use this function. */
     (void) OSIncrementAtomic(&g_activation_count);
@@ -124,12 +125,12 @@ static int hook_exec(kauth_cred_t cred,
     switch (state) {
         case ENFORCING:
             if (is_shell_blocked(procpath)) {
-                if (get_process_path(ppid, &pprocpath) != 0) {
+                if (get_process_path(ppid, pprocpath) != 0) {
                     /* We don't know the path of the parent process. This is unlikely to happen,
                      * since ShellGuard starts before pretty much any other userland process (in production env).
                      * However, in testing phase it may occur processes were already running before we came into the kernel.
                      */
-                    pprocpath = procpath;
+                    strncpy(pprocpath, procpath, MAXPATHLEN);
                 }
                 action = filter(procpath, pprocpath);
                 if (action == DENY) {
@@ -144,8 +145,8 @@ static int hook_exec(kauth_cred_t cred,
             break;
         case COMPLAINING:
             if (is_shell_blocked(procpath)) {
-                if (get_process_path(ppid, &pprocpath) != 0) {
-                    pprocpath = procpath;
+                if (get_process_path(ppid, pprocpath) != 0) {
+                    strncpy(pprocpath, procpath, MAXPATHLEN);
                 }
                 action = filter(procname, procpath);
                 if (action == DENY) {
@@ -162,10 +163,6 @@ static int hook_exec(kauth_cred_t cred,
     }
     
 exit:
-    if (pprocpath != NULL) {
-        OSFree(procpath, MAXPATHLEN, return_mallocTag());
-    }
-    
     (void) OSDecrementAtomic(&g_activation_count);
     
     return action;
@@ -224,25 +221,15 @@ kern_return_t cleanup_list_structure(void)
 /* Get process path from the list of currently running processes. This list contains only
  * the processes that executed *after* ShellGuard was loaded into the kernel.
  */
-int32_t get_process_path(pid_t pid, char** path_ptr)
+int32_t get_process_path(pid_t pid, char* path_ptr)
 {
-//    if (path_ptr == NULL) {
-//        return -1;
-//    }
     lck_mtx_lock(proc_list_lock);
     
     process_t *entry = NULL;
     process_t *next_entry = NULL;
     LIST_FOREACH_SAFE(entry, &process_list_head, entries, next_entry) {
         if (entry->pid == pid) {
-            *path_ptr = OSMalloc(MAXPATHLEN, return_mallocTag());
-            if (path_ptr == NULL) {
-                lck_mtx_unlock(proc_list_lock);
-                LOG_ERROR("Could not allocate memory.");
-                return ENOMEM;
-            }
-            strlcpy(*path_ptr, entry->procname, MAXPATHLEN);
-            
+            strlcpy(path_ptr, entry->procname, MAXPATHLEN);
             lck_mtx_unlock(proc_list_lock);
             return 0;
         }
