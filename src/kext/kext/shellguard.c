@@ -42,11 +42,17 @@ kern_return_t shellguard_start(kmod_info_t * ki, void *d)
 
 kern_return_t shellguard_stop(kmod_info_t *ki, void *d)
 {
+    uint32_t i = 5;
     while (client_connected()) {
         LOG_ERROR("Cannot unload kernel extension. Client still connected.");
         /* Stop the client. */
         proc_signal(client_pid, SIGINT);
-        //IOSleep(500);
+        IOSleep(300);
+        /* After 5 trials to stop the client gracefully, we forcefully kill it. */
+        if (i == 0) {
+            proc_signal(client_pid, SIGKILL);
+        }
+        i--;
     }
     
     unregister_mac_policy(d);
