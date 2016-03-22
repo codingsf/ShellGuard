@@ -10,6 +10,8 @@
 
 extern int32_t state;
 
+pid_t client_pid;
+
 /* local prototypes */
 static int ctl_connect(kern_ctl_ref ctl_ref, struct sockaddr_ctl *sac, void **unitinfo);
 static errno_t ctl_disconnect(kern_ctl_ref ctl_ref, u_int32_t unit, void *unitinfo);
@@ -93,10 +95,10 @@ static int ctl_connect(kern_ctl_ref ctl_ref, struct sockaddr_ctl *sac, void **un
     if (client_connected() > 0) {
         return EBUSY;
     }
-    pid_t pid = proc_selfpid();
+    client_pid = proc_selfpid();
     char procname[128] = {0};
     proc_selfname(procname, 128);
-    LOG_INFO("Process %s with pid %d connecting...", procname, pid);
+    LOG_INFO("Process %s with pid %d connecting...", procname, client_pid);
     g_number_of_clients++;
     g_client_unit = sac->sc_unit;
     g_client_ctl_ref = ctl_ref;

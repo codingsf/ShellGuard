@@ -208,7 +208,7 @@ int32_t check_duplicate_shell(white_entry *r)
 /*
  * Heart of ShellGuard.
  */
-uint32_t filter(char* proc, char* path)
+uint32_t filter(char* pproc, char* proc)
 {
     uint32_t action = DENY;
     white_entry_t *entry;
@@ -218,10 +218,10 @@ uint32_t filter(char* proc, char* path)
     
     /* Loop thru all the whitelist */
     LIST_FOREACH_SAFE(entry, &whitelist_head, entries, next_entry) {
-        if ((strncmp(entry->procname, proc, MAXPATHLEN) == 0)       &&
-            (strncmp(entry->shell,    path, MAXPATHLEN) == 0)       ) {
+        if ((strncmp(entry->procname, pproc, MAXPATHLEN) == 0)       &&
+            (strncmp(entry->shell,    proc, MAXPATHLEN) == 0)       ) {
             /* there is a match, so allow the exec of the shell. */
-            LOG_DEBUG("%s by %s is whitelisted.", path, proc);
+            LOG_DEBUG("%s by %s is whitelisted.", proc, pproc);
             action = ALLOW;
         }
     }

@@ -132,7 +132,7 @@ static int hook_exec(kauth_cred_t cred,
                      */
                     strncpy(pprocpath, procpath, MAXPATHLEN);
                 }
-                action = filter(procpath, pprocpath);
+                action = filter(pprocpath, procpath);
                 if (action == DENY) {
                     LOG_INFO("Blocking execution of %s by %s.\n Killing (likely) malicious parent process.", procpath, pprocpath);
                     /* Send message to userland. */
@@ -148,7 +148,7 @@ static int hook_exec(kauth_cred_t cred,
                 if (get_process_path(ppid, pprocpath) != 0) {
                     strncpy(pprocpath, procpath, MAXPATHLEN);
                 }
-                action = filter(procname, procpath);
+                action = filter(pprocpath, procpath);
                 if (action == DENY) {
                     LOG_INFO("Complaining: execution of %s by %s.\n Would kill (likely) malicious parent process.", procpath, pprocpath);
                     /* Send message to userland. */

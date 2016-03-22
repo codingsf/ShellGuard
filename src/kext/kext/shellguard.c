@@ -16,6 +16,8 @@ kern_return_t shellguard_stop(kmod_info_t *ki, void *d);
 
 static OSMallocTag gMallocTag = NULL;
 
+extern pid_t client_pid;
+
 #pragma mark -
 #pragma mark KEXT control functions
 
@@ -42,8 +44,9 @@ kern_return_t shellguard_stop(kmod_info_t *ki, void *d)
 {
     while (client_connected()) {
         LOG_ERROR("Cannot unload kernel extension. Client still connected.");
-        // kill client? Waiting instead...
-        IOSleep(5000);
+        /* Stop the client. */
+        proc_signal(client_pid, SIGINT);
+        //IOSleep(500);
     }
     
     unregister_mac_policy(d);
