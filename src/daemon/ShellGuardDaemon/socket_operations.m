@@ -14,7 +14,7 @@
 /*
  * Gets the control ID that the kernel registers using the socket connection.
  */
-UInt32 getControlIdentifier(int socket) {
+UInt32 get_control_identifier(int socket) {
     struct ctl_info ctl_info = {0};
 	strlcpy(ctl_info.ctl_name, BUNDLE_ID, sizeof(ctl_info.ctl_name));
 	if (ioctl(socket, CTLIOCGINFO, &ctl_info)) {
@@ -65,13 +65,13 @@ void process_kernel_message(int32_t socket) {
  * Creates a white_entry struct from Swift passed paramters. This function should be implemented in Swift
  * in the future.
  */
-white_entry* toEntryStruct(const char* procname, const char* shell) {
-    white_entry* r = (white_entry*) malloc(sizeof(white_entry));
+entry_t* toEntryStruct(const char* procname, const char* shell) {
+    entry_t* r = (entry_t*) malloc(sizeof(entry_t));
     if (r == NULL) {
         printf("[ERROR] Failed to allocate memory for whitelist item.");
         printf("[ERROR] Skipping whitelist item %s; %s.", procname, shell);
     }
-    bzero(r, sizeof(white_entry));
+    bzero(r, sizeof(entry_t));
     strlcpy(r->procname, procname, sizeof(r->procname));
     strlcpy(r->shell, shell, sizeof(r->shell));
     
@@ -82,7 +82,7 @@ white_entry* toEntryStruct(const char* procname, const char* shell) {
  * Copies everything to a userspace_control_message struct and sends it to the kernel.
  * This function assumes that arguments are checked and safe.
  */
-int32_t prepControlDataAndSend(int socket, UInt32 cmd, UInt32 pid, const char* procname, white_entry* e) {
+int32_t send_to_kernel(int socket, UInt32 cmd, entry_t* e) {
     userspace_control_message ucm = {0};
     strlcpy(ucm.credentals, AUTH_CODE, sizeof(ucm.credentals));
 

@@ -4,6 +4,7 @@
 #include "shellguard.h"
 #include "kext_control.h"
 #include "mac_hooks.h"
+#include "filter.h"
 
 #include <IOKit/IOLib.h>
 
@@ -44,7 +45,7 @@ kern_return_t shellguard_stop(kmod_info_t *ki, void *d)
 {
     uint32_t i = 5;
     while (client_connected()) {
-        LOG_ERROR("Cannot unload kernel extension. Client still connected.");
+        LOG_ERROR("Cannot unload kernel extension. Client still connected, but no worries, we'll kill it right now.");
         /* Stop the client. */
         proc_signal(client_pid, SIGINT);
         IOSleep(300);

@@ -26,8 +26,8 @@ typedef struct shell_entry_t {
 
 kern_return_t init_list_structs(void);
 kern_return_t remove_list_structs(void);
-kern_return_t insert_whitelist_entry(white_entry *e);
-kern_return_t insert_shell_entry(white_entry *e);
+kern_return_t insert_whitelist_entry(entry_t *e);
+kern_return_t insert_shell_entry(entry_t *e);
 void remove_white_list(void);
 void remove_shells_list(void);
 uint32_t filter(char* proc, char* path);

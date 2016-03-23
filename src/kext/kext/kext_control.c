@@ -3,14 +3,14 @@
 #include "kext_control.h"
 #include "definitions.h"
 #include "shared_data.h"
+#include "mac_hooks.h"
+#include "filter.h"
 
 #include <sys/kern_control.h>
 #include <sys/errno.h>
 #include <sys/errno.h>
 
 extern int32_t state;
-
-pid_t client_pid;
 
 /* local prototypes */
 static int ctl_connect(kern_ctl_ref ctl_ref, struct sockaddr_ctl *sac, void **unitinfo);
@@ -19,12 +19,13 @@ static int ctl_set(kern_ctl_ref ctl_ref, u_int32_t unit, void *unitinfo, int opt
 
 
 /* some globals */
+static const char VALID_CLIENT_PATH[]   = "/Applications/ShellGuard/Contents/MacOS/ShellGuard";
 static int32_t g_number_of_clients;
 static kern_ctl_ref g_ctl_ref;
-static u_int32_t g_client_unit = 0;
-static kern_ctl_ref g_client_ctl_ref = NULL;
-static boolean_t g_kern_ctl_registered = FALSE;
-
+static u_int32_t g_client_unit          = 0;
+static kern_ctl_ref g_client_ctl_ref    = NULL;
+static boolean_t g_kern_ctl_registered  = FALSE;
+pid_t client_pid;
 
 static struct kern_ctl_reg g_ctl_reg = {
     BUNDLE_ID,            /* use a reverse dns name which includes a name unique to your comany */
@@ -87,7 +88,7 @@ kern_return_t remove_kext_control(void)
 
 /*
  * Called when a client connects to the socket.
- * We need to store some info to use later.
+ * Auhtenticates the process that is trying to connect and stores some info for later use.
  */
 static int ctl_connect(kern_ctl_ref ctl_ref, struct sockaddr_ctl *sac, void **unitinfo)
 {
@@ -95,10 +96,26 @@ static int ctl_connect(kern_ctl_ref ctl_ref, struct sockaddr_ctl *sac, void **un
     if (client_connected() > 0) {
         return EBUSY;
     }
+    
+    /* Authenticate client. We don't want malicious clients connecting. We validate that the client process
+     * path (its binary) is equal to VALID_CLIENT_PATH.
+     */
     client_pid = proc_selfpid();
-    char procname[128] = {0};
-    proc_selfname(procname, 128);
-    LOG_INFO("Process %s with pid %d connecting...", procname, client_pid);
+    char clientname[MAXPATHLEN] = {0};
+    char clientpath[MAXPATHLEN] = {0};
+    proc_selfname(clientname, MAXPATHLEN);
+    if (get_process_path(client_pid, clientpath) != 0) {
+        LOG_ERROR("Cannot validate path of the client process: %d: %s.\n This is fatal.", client_pid, clientname);
+        return EBUSY;
+    }
+//  !! Turn this on in actual production mode !!
+//    if (strncmp(clientpath, VALID_CLIENT_PATH, MAXPATHLEN) != 0) {
+//        /* Malicious client is trying to connect. Reject & kill... */
+//        proc_signal(client_pid, SIGKILL);
+//        return EBUSY;
+//    }
+    LOG_INFO("Process %s with pid %d is authenticated.", clientname, client_pid);
+    
     g_number_of_clients++;
     g_client_unit = sac->sc_unit;
     g_client_ctl_ref = ctl_ref;
@@ -107,7 +124,7 @@ static int ctl_connect(kern_ctl_ref ctl_ref, struct sockaddr_ctl *sac, void **un
 }
 
 /*
- * and when client disconnects
+ * Called when the client disconnects.
  */
 static errno_t ctl_disconnect(kern_ctl_ref ctl_ref, u_int32_t unit, void *unitinfo)
 {
@@ -115,7 +132,8 @@ static errno_t ctl_disconnect(kern_ctl_ref ctl_ref, u_int32_t unit, void *unitin
     g_number_of_clients = 0;
     g_client_unit = 0;
     g_client_ctl_ref = NULL;
-    LOG_INFO("Client disconnected!");
+    LOG_INFO("Client with pid %d is disconnected!", client_pid);
+    client_pid = 0;
     return 0;
 }
 
@@ -146,6 +164,11 @@ static int ctl_set(kern_ctl_ref ctl_ref, u_int32_t unit, void *unitinfo, int opt
         case LOAD_SHELLS:
             LOG_DEBUG("Received request to LOAD SHELLS.");
             insert_shell_entry(&ucm->entry);
+            break;
+        case RESET_LISTS:
+            LOG_DEBUG("Received request to enable RESET_LISTS mode.");
+            remove_shells_list();
+            remove_white_list();
             break;
         case ENFORCING:
             LOG_DEBUG("Received request to enable ENFORCING mode.");

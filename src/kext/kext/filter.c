@@ -1,6 +1,6 @@
 
 #include "shellguard.h"
-#include "whitelist.h"
+#include "filter.h"
 #include "definitions.h"
 
 int32_t             state;
@@ -10,8 +10,8 @@ static lck_mtx_t*   shelllist_lock = NULL;
 LIST_HEAD(whitelist_LIST_head, white_entry_t) whitelist_head = LIST_HEAD_INITIALIZER(whitelist_head);
 LIST_HEAD(shelllist_LIST_head, shell_entry_t) shelllist_head = LIST_HEAD_INITIALIZER(shelllist_head);
 
-int32_t check_duplicate(white_entry *r);
-int32_t check_duplicate_shell(white_entry *r);
+int32_t check_duplicate(entry_t *r);
+int32_t check_duplicate_shell(entry_t *r);
 
 #pragma -
 #pragma mark List Operations
@@ -53,7 +53,7 @@ kern_return_t init_list_structs()
 /*
  * Inserts a shell into the list of blacklisted shells.
  */
-kern_return_t insert_shell_entry(white_entry *e)
+kern_return_t insert_shell_entry(entry_t *e)
 {
     lck_mtx_lock(shelllist_lock);
     // this data should be treated as untrusted. More checks needed...
@@ -88,7 +88,7 @@ kern_return_t insert_shell_entry(white_entry *e)
 /*
  * Inserts a entry into the whitelist.
  */
-kern_return_t insert_whitelist_entry(white_entry *e)
+kern_return_t insert_whitelist_entry(entry_t *e)
 {
     lck_mtx_lock(whitelist_lock);
     // this data should be treated as untrusted. More checks needed...
@@ -169,7 +169,7 @@ void remove_shells_list(void)
  * Return TRUE iff there is already a same entry in the list.
  * This function is called under mutex lock.
  */
-int32_t check_duplicate(white_entry *r)
+int32_t check_duplicate(entry_t *r)
 {
     white_entry_t *entry;
     white_entry_t *next_entry;
@@ -188,7 +188,7 @@ int32_t check_duplicate(white_entry *r)
  * Return TRUE iff there is already a same shell in the list.
  * This function is called under mutex lock.
  */
-int32_t check_duplicate_shell(white_entry *r)
+int32_t check_duplicate_shell(entry_t *r)
 {
     shell_entry_t *entry;
     shell_entry_t *next_entry;

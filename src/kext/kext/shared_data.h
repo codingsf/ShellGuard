@@ -10,7 +10,7 @@
 
 #define LOAD_WHITELIST  1
 #define LOAD_SHELLS     2
-
+#define RESET_LISTS     3
 #define ENFORCING       4
 #define ENFORCING_OFF   5
 
@@ -21,12 +21,12 @@
 typedef struct {
     char    procname[MAXPATHLEN];
     char    shell[MAXPATHLEN];
-} white_entry;
+} entry_t;
 
 
 typedef struct  {
-    char          credentals[64];
-    white_entry   entry;
+    char        credentals[64];
+    entry_t     entry;
 } userspace_control_message;
 
 typedef struct {

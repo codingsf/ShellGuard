@@ -14,10 +14,9 @@
 #include "mac_hooks.h"
 #include "kext_control.h"
 #include "definitions.h"
-#include "whitelist.h"
+#include "filter.h"
 #include "shellguard.h"
 
-#include <sys/proc.h>
 #include <security/mac_framework.h>
 #include <security/mac.h>
 #include <security/mac_policy.h>

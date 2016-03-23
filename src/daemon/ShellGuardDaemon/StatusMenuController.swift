@@ -6,6 +6,7 @@ class StatusMenuController: NSObject {
     enum State: UInt32 {
         case LOAD_WHITELIST     = 1
         case LOAD_SHELLS        = 2
+        case RESET_LISTS        = 3
         case ENFORCING          = 4
         case ENFORCING_OFF      = 5
         case COMPLAINING        = 7
@@ -127,14 +128,15 @@ class StatusMenuController: NSObject {
     
     func enableMode(mode: UInt32) {
         loader.loadConfigFile(POLICY_FILE_LOCATION)
+        kextCommunicate.setKextMode(UInt32(RESET_LISTS))
         kextCommunicate.sendListToKext(loader.getWhitelist(), mode: LOAD_WHITELIST)
         kextCommunicate.sendListToKext(loader.getShellList(), mode: LOAD_SHELLS)
-        kextCommunicate.prepAndSendToSocket(mode, pid: UINT32_MAX, procname: "N/A")
+        kextCommunicate.setKextMode(mode)
     }
     
     func disableMode(mode: UInt32) {
         loader.emptyWhitelist()
-        self.kextCommunicate.prepAndSendToSocket(mode, pid: UINT32_MAX, procname: "N/A")
+        self.kextCommunicate.setKextMode(mode)
     }
     
     func setStatusIcon(conf: (dark: Bool, enabled: Bool)) {

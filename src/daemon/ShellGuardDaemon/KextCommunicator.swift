@@ -7,14 +7,7 @@ import Foundation
  *
  */
 class KextCommunicator {
-    
-    let PROC            = 0
-    let OPERATION       = 1
-    let PATH            = 2
-    let ROOT            = 3
-    let PATH_WILDCARD   = 4
-    let ACTION          = 5
-    
+
     
     /* Socket used to connect to kext. */
     var g_socket: Int32 = -1
@@ -33,7 +26,7 @@ class KextCommunicator {
             return false
         }
         
-        let controlIdentifier = getControlIdentifier(g_socket)
+        let controlIdentifier = get_control_identifier(g_socket)
         guard controlIdentifier > 0 else {
             print("Failed to get the control ID for the utun kernel control")
             close(g_socket)
@@ -62,32 +55,18 @@ class KextCommunicator {
     }
     
     /*
-    * Sends kernelspace stuff via Obj-C bridging to C/kext.
-    */
-    func prepAndSendToSocket(cmd: UInt32, pid: UInt32, procname: String) {
-        _ = prepControlDataAndSend(Int32(g_socket), cmd, pid, procname, nil)
+     * Sends configs for kext via Obj-C bridging to C/kext.
+     */
+    func setKextMode(cmd: UInt32) {
+        _ = send_to_kernel(Int32(g_socket), cmd, nil)
     }
     
     
     func sendListToKext(list: [Item], mode: Int32) {
         for item in list {
             print(item.toString())
-            if mode == LOAD_WHITELIST {
-                _ = prepControlDataAndSend(Int32(g_socket), UInt32(LOAD_WHITELIST), UINT32_MAX, "N/A", toEntryStruct(item.processName, item.shell))
-            } else {
-                _ = prepControlDataAndSend(Int32(g_socket), UInt32(LOAD_SHELLS), UINT32_MAX, "N/A", toEntryStruct("N/A", item.shell))
-            }
+            _ = send_to_kernel(Int32(g_socket), UInt32(mode), toEntryStruct(item.processName, item.shell))
         }
-    }
-    
-    
-    func printMessage(message: String) {
-        let message_parts = message.componentsSeparatedByString(";")
-        guard message_parts.count == 3 else {
-            print("[ERROR] Incorrectly formatted message: \(message_parts)")
-            return
-        }
-        print("[INFO] Kernel message: \(message_parts[PROC]) tried to \(message_parts[OPERATION]) on \(message_parts[PATH]) blocked.")
     }
 }
 
@@ -98,8 +77,8 @@ class KextCommunicator {
     let PROCNAME    = 0
     let SHELL       = 1
     
-    let ENFORCING   = 4
-    let COMPLAING   = 7
+//    let ENFORCING   = 4
+//    let COMPLAING   = 7
     
     let logger = Logger.sharedInstance
 
@@ -109,18 +88,28 @@ class KextCommunicator {
             print("[ERROR] Incorrectly formatted message: \(message_parts)")
             return
         }
-        print("[INFO] Kernel message: \(message_parts[PROCNAME]) tried to execute \(message_parts[SHELL]). ShellGuard blocked this. ")
+        switch (Int32(mode)) {
+            case ENFORCING:
+                print("[!!] \(message_parts[PROCNAME]) tried to execute \(message_parts[SHELL]). ShellGuard blocked this.")
+                break
+            case COMPLAINING:
+                print("[!]  \(message_parts[PROCNAME]) tried to execute \(message_parts[SHELL]). ShellGuard just complains.")
+                break
+            default:
+                return
+        }
         spawnNotification(message_parts, mode: mode);
     }
     
     func spawnNotification(message: [String], mode: Int) {
         var notificationMode: String
-        switch (mode) {
-            case COMPLAING:
+        switch (Int32(mode)) {
+            case COMPLAINING:
                 notificationMode = "Complaining:"
-                break;
+                break
             case ENFORCING:
                 notificationMode = "Blocking:"
+                break
             default:
                 return
         }

@@ -2,7 +2,7 @@
 #ifndef driver_control_h
 #define driver_control_h
 
-#include "whitelist.h"
+#include "shared_data.h"
 #include <mach/mach_types.h>
 #include <sys/types.h>
 

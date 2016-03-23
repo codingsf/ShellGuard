@@ -1,6 +1,14 @@
 [
 	{
-		"black_listed_shells" : ["/bin/bash", "/bin/sh"]
+		"black_listed_shells" : [
+			"/bin/sh", 
+			"/bin/zsh",
+			"/bin/ksh",
+			"/bin/bash", 
+			"/bin/tcsh",
+			"/usr/bin/perl5.18", 
+			"/usr/bin/python"
+		]
     },
     {
         "process_name" : "/bin/sh",

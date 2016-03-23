@@ -98,7 +98,7 @@ class ConfigLoader {
             malformedItem([shell])
             return
         }
-        shellList.append(Item(proc: "", shell: shell))
+        shellList.append(Item(proc: "N/A", shell: shell))
     }
     
     func malformedItem(s: [String]) {
