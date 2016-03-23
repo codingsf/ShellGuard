@@ -15,7 +15,6 @@ class KeychainStore {
     
     /* Singleton. This prevents others from using the default '()' initializer for this class. */
     static let sharedInstance = KeychainStore()
-    private init() {}
     
     /* Set key:String value:String pair in Keychain. */
     func set(value: String, forKey key: String) -> Bool {

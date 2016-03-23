@@ -21,7 +21,6 @@ class KextCommunicator {
     
     static let sharedInstance = KextCommunicator()
     
-    private init() {}
     
     /*
     * Connects and initializes socket used to communicate with kext.

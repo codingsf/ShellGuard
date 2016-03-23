@@ -8,8 +8,6 @@ class Logger {
     
     static let sharedInstance = Logger()
     let logFilePath:NSString = "~/Documents/ShellGuard_log.txt"
-
-    private init() {}
     
     /* Check if path exists. */
     func logExists() -> Bool {
