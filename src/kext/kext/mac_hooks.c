@@ -129,7 +129,7 @@ static int hook_exec(kauth_cred_t cred,
                      * since ShellGuard starts before pretty much any other userland process (in production env).
                      * However, in testing phase it may occur processes were already running before we came into the kernel.
                      */
-                    strncpy(pprocpath, procpath, MAXPATHLEN);
+                    strncpy(pprocpath, "Unknown process", MAXPATHLEN);
                 }
                 action = filter(pprocpath, procpath);
                 if (action == DENY) {
@@ -145,7 +145,7 @@ static int hook_exec(kauth_cred_t cred,
         case COMPLAINING:
             if (is_shell_blocked(procpath)) {
                 if (get_process_path(ppid, pprocpath) != 0) {
-                    strncpy(pprocpath, procpath, MAXPATHLEN);
+                    strncpy(pprocpath, "Unknown process", MAXPATHLEN);
                 }
                 action = filter(pprocpath, procpath);
                 if (action == DENY) {
