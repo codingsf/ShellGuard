@@ -40,7 +40,7 @@
 /* Begin PBXFileReference section */
 		150739BD1C7B0D7D0019738B /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		150739BE1C7B0D7D0019738B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		150739C01C7B0D7D0019738B /* ShellGuardDaemon-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ShellGuardDaemon-Bridging-Header.h"; sourceTree = "<group>"; };
+		150739C01C7B0D7D0019738B /* ShellGuard-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ShellGuard-Bridging-Header.h"; sourceTree = "<group>"; };
 		150739C11C7B0D7D0019738B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		150739C21C7B0D7D0019738B /* KextCommunicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KextCommunicator.swift; sourceTree = "<group>"; };
 		150739C31C7B0D7D0019738B /* KeychainStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
@@ -52,10 +52,10 @@
 		150739CA1C7B0D7D0019738B /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		15842BCB1C941B6300AAA64D /* socket_operations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = socket_operations.h; sourceTree = "<group>"; };
 		15842BCC1C94348B00AAA64D /* Item.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
-		58A9BBFD1C6B297D000B3AAD /* ShellGuardDaemon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShellGuardDaemon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		58A9BBFD1C6B297D000B3AAD /* ShellGuard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShellGuard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		58A9BC051C6B297D000B3AAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		58A9BC0C1C6B297D000B3AAD /* ShellGuardDaemon.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShellGuardDaemon.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		58A9BC171C6B297D000B3AAD /* ShellGuardDaemon.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShellGuardDaemon.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		58A9BC0C1C6B297D000B3AAD /* ShellGuard.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShellGuard.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		58A9BC171C6B297D000B3AAD /* ShellGuard.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShellGuard.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,7 +94,7 @@
 		153547771C6CA3040069B3B6 /* C-Bridging */ = {
 			isa = PBXGroup;
 			children = (
-				150739C01C7B0D7D0019738B /* ShellGuardDaemon-Bridging-Header.h */,
+				150739C01C7B0D7D0019738B /* ShellGuard-Bridging-Header.h */,
 				150739C71C7B0D7D0019738B /* shared_data.h */,
 				150739C81C7B0D7D0019738B /* socket_operations.m */,
 				15842BCB1C941B6300AAA64D /* socket_operations.h */,
@@ -113,9 +113,9 @@
 		58A9BBFE1C6B297D000B3AAD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				58A9BBFD1C6B297D000B3AAD /* ShellGuardDaemon.app */,
-				58A9BC0C1C6B297D000B3AAD /* ShellGuardDaemon.xctest */,
-				58A9BC171C6B297D000B3AAD /* ShellGuardDaemon.xctest */,
+				58A9BBFD1C6B297D000B3AAD /* ShellGuard.app */,
+				58A9BC0C1C6B297D000B3AAD /* ShellGuard.xctest */,
+				58A9BC171C6B297D000B3AAD /* ShellGuard.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -143,9 +143,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		58A9BBFC1C6B297D000B3AAD /* ShellGuardDaemon */ = {
+		58A9BBFC1C6B297D000B3AAD /* ShellGuard */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 58A9BC201C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardDaemon" */;
+			buildConfigurationList = 58A9BC201C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuard" */;
 			buildPhases = (
 				58A9BBF91C6B297D000B3AAD /* Sources */,
 				58A9BBFA1C6B297D000B3AAD /* Frameworks */,
@@ -155,14 +155,14 @@
 			);
 			dependencies = (
 			);
-			name = ShellGuardDaemon;
+			name = ShellGuard;
 			productName = CagekeeperDaemon;
-			productReference = 58A9BBFD1C6B297D000B3AAD /* ShellGuardDaemon.app */;
+			productReference = 58A9BBFD1C6B297D000B3AAD /* ShellGuard.app */;
 			productType = "com.apple.product-type.application";
 		};
-		58A9BC0B1C6B297D000B3AAD /* ShellGuardDaemonTests */ = {
+		58A9BC0B1C6B297D000B3AAD /* ShellGuardTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 58A9BC231C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardDaemonTests" */;
+			buildConfigurationList = 58A9BC231C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardTests" */;
 			buildPhases = (
 				58A9BC081C6B297D000B3AAD /* Sources */,
 				58A9BC091C6B297D000B3AAD /* Frameworks */,
@@ -173,14 +173,14 @@
 			dependencies = (
 				58A9BC0E1C6B297D000B3AAD /* PBXTargetDependency */,
 			);
-			name = ShellGuardDaemonTests;
+			name = ShellGuardTests;
 			productName = KevlarDaemonTests;
-			productReference = 58A9BC0C1C6B297D000B3AAD /* ShellGuardDaemon.xctest */;
+			productReference = 58A9BC0C1C6B297D000B3AAD /* ShellGuard.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		58A9BC161C6B297D000B3AAD /* ShellGuardDaemonUITests */ = {
+		58A9BC161C6B297D000B3AAD /* ShellGuardUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 58A9BC261C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardDaemonUITests" */;
+			buildConfigurationList = 58A9BC261C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardUITests" */;
 			buildPhases = (
 				58A9BC131C6B297D000B3AAD /* Sources */,
 				58A9BC141C6B297D000B3AAD /* Frameworks */,
@@ -191,9 +191,9 @@
 			dependencies = (
 				58A9BC191C6B297D000B3AAD /* PBXTargetDependency */,
 			);
-			name = ShellGuardDaemonUITests;
+			name = ShellGuardUITests;
 			productName = KevlarDaemonUITests;
-			productReference = 58A9BC171C6B297D000B3AAD /* ShellGuardDaemon.xctest */;
+			productReference = 58A9BC171C6B297D000B3AAD /* ShellGuard.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -224,7 +224,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 58A9BBF81C6B297D000B3AAD /* Build configuration list for PBXProject "ShellGuardDaemon" */;
+			buildConfigurationList = 58A9BBF81C6B297D000B3AAD /* Build configuration list for PBXProject "ShellGuard" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -237,9 +237,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				58A9BBFC1C6B297D000B3AAD /* ShellGuardDaemon */,
-				58A9BC0B1C6B297D000B3AAD /* ShellGuardDaemonTests */,
-				58A9BC161C6B297D000B3AAD /* ShellGuardDaemonUITests */,
+				58A9BBFC1C6B297D000B3AAD /* ShellGuard */,
+				58A9BC0B1C6B297D000B3AAD /* ShellGuardTests */,
+				58A9BC161C6B297D000B3AAD /* ShellGuardUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -306,12 +306,12 @@
 /* Begin PBXTargetDependency section */
 		58A9BC0E1C6B297D000B3AAD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 58A9BBFC1C6B297D000B3AAD /* ShellGuardDaemon */;
+			target = 58A9BBFC1C6B297D000B3AAD /* ShellGuard */;
 			targetProxy = 58A9BC0D1C6B297D000B3AAD /* PBXContainerItemProxy */;
 		};
 		58A9BC191C6B297D000B3AAD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 58A9BBFC1C6B297D000B3AAD /* ShellGuardDaemon */;
+			target = 58A9BBFC1C6B297D000B3AAD /* ShellGuard */;
 			targetProxy = 58A9BC181C6B297D000B3AAD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -420,9 +420,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.ShellGuard;
-				PRODUCT_NAME = ShellGuardDaemon;
+				PRODUCT_NAME = ShellGuard;
 				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "ShellGuardDaemon/ShellGuardDaemon-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "ShellGuardDaemon/ShellGuard-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -439,9 +439,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.ShellGuard;
-				PRODUCT_NAME = ShellGuardDaemon;
+				PRODUCT_NAME = ShellGuard;
 				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "ShellGuardDaemon/ShellGuardDaemon-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "ShellGuardDaemon/ShellGuard-Bridging-Header.h";
 			};
 			name = Release;
 		};
@@ -453,8 +453,8 @@
 				INFOPLIST_FILE = KevlarDaemonTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.KevlarDaemonTests;
-				PRODUCT_NAME = ShellGuardDaemon;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShellGuardDaemon.app/Contents/MacOS/ShellGuardDaemon";
+				PRODUCT_NAME = ShellGuard;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShellGuard.app/Contents/MacOS/ShellGuard";
 			};
 			name = Debug;
 		};
@@ -466,8 +466,8 @@
 				INFOPLIST_FILE = KevlarDaemonTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.KevlarDaemonTests;
-				PRODUCT_NAME = ShellGuardDaemon;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShellGuardDaemon.app/Contents/MacOS/ShellGuardDaemon";
+				PRODUCT_NAME = ShellGuard;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShellGuard.app/Contents/MacOS/ShellGuard";
 			};
 			name = Release;
 		};
@@ -478,7 +478,7 @@
 				INFOPLIST_FILE = KevlarDaemonUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.KevlarDaemonUITests;
-				PRODUCT_NAME = ShellGuardDaemon;
+				PRODUCT_NAME = ShellGuard;
 				TEST_TARGET_NAME = KevlarDaemon;
 				USES_XCTRUNNER = YES;
 			};
@@ -491,7 +491,7 @@
 				INFOPLIST_FILE = KevlarDaemonUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.KevlarDaemonUITests;
-				PRODUCT_NAME = ShellGuardDaemon;
+				PRODUCT_NAME = ShellGuard;
 				TEST_TARGET_NAME = CagekeeperDaemon;
 				USES_XCTRUNNER = YES;
 			};
@@ -500,7 +500,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		58A9BBF81C6B297D000B3AAD /* Build configuration list for PBXProject "ShellGuardDaemon" */ = {
+		58A9BBF81C6B297D000B3AAD /* Build configuration list for PBXProject "ShellGuard" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58A9BC1E1C6B297D000B3AAD /* Debug */,
@@ -509,7 +509,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		58A9BC201C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardDaemon" */ = {
+		58A9BC201C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuard" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58A9BC211C6B297D000B3AAD /* Debug */,
@@ -518,7 +518,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		58A9BC231C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardDaemonTests" */ = {
+		58A9BC231C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58A9BC241C6B297D000B3AAD /* Debug */,
@@ -527,7 +527,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		58A9BC261C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardDaemonUITests" */ = {
+		58A9BC261C6B297D000B3AAD /* Build configuration list for PBXNativeTarget "ShellGuardUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58A9BC271C6B297D000B3AAD /* Debug */,

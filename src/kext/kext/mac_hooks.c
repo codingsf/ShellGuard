@@ -45,6 +45,8 @@ kern_return_t cleanup_list_structure(void);
 kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid);
 kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode);
 int32_t get_process_path(pid_t pid, char* path_ptr);
+u_int32_t get_qattr_flags(vnode_t vnode);
+u_int32_t signed_binary(vnode_t vp, const char* path);
 
 static int hook_exec(kauth_cred_t cred,
                      struct vnode *vp,
@@ -119,7 +121,12 @@ static int hook_exec(kauth_cred_t cred,
     if (strcmp(procpath, XPCPROXY) == 0) {
         goto exit;
     }
+    
+    LOG_DEBUG("%s is: %d.", procpath, signed_binary(vp, procpath));
+              
     store_new_process(procpath, pid, ppid);
+    
+    
     
     switch (state) {
         case ENFORCING:
@@ -166,6 +173,9 @@ exit:
     
     return action;
 }
+
+#pragma mark -
+#pragma mark TrustedBSD Hooks helper functions
 
 /* Store new process so that we can retrieve its path later. */
 kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid)
@@ -248,6 +258,101 @@ kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode)
     return KERN_SUCCESS;
 }
 
+/* Checks if the binary is signed. */
+u_int32_t signed_binary(vnode_t vp, const char* path)
+{
+    u_int32_t has_q_flags = get_qattr_flags(vp);
+    
+    if (has_q_flags == FALSE) {
+        if (strncmp("/Volumes/", path, strlen("/Volumes/")) == 0) {
+            return DMG_LOADED;
+        }
+    }
+    /* CoreServicesUIAgent (user-mode) sets flags to 0x40 when user clicks 'allow', so just allow such binaries. */
+    if ((has_q_flags & 0x40) != 0) {
+        return PREV_APPROVED;
+    }
+    
+    lck_mtx_lock((lck_mtx_t *)vp);
+    
+    //init offset pointer
+    unsigned char* offsetPointer = (unsigned char*)(vnode_t)vp;
+    
+    //get pointer to struct ubc_info in vnode struct
+    // ->disasm from kernel:  mov rax, [vnode+70h]
+    offsetPointer += 0x70;
+    if(*(unsigned long*)(offsetPointer) == 0) {
+        lck_mtx_unlock((lck_mtx_t *)vp);
+        return SIGNED;
+    }
+    LOG_DEBUG("vnode 'vu_ubcinfo': %p, points to: %p\n", offsetPointer, (void*)*(unsigned long*)(offsetPointer));
+    
+    //dref pointer
+    // ->get addr of struct ubc_info
+    offsetPointer = (unsigned char*)*(unsigned long*)(offsetPointer);
+    
+    //get pointer to cs_blob struct from struct ubc_info
+    // ->disasm from kernel: mov rax, [ubc_info+50h]
+    offsetPointer += 0x50;
+    
+    LOG_DEBUG("ubc_info 'cs_blob': %p\n", offsetPointer);
+    
+    //non-null csBlogs means process's binary is signed
+    // ->note: yah, its a limitation that the binary could be signed, but invalidly
+    if(*(unsigned long*)(offsetPointer) == 0) {
+        LOG_DEBUG("%s is signed (non-NULL cs_blob), so allowing\n", path);
+        lck_mtx_unlock((lck_mtx_t *)vp);
+        return SIGNED;
+    }
+    
+    lck_mtx_unlock((lck_mtx_t *)vp);
+    
+    return SIGNED;
+}
+
+/* Check if binary has Quarantine flags set, meaning it has been downloaded from the Internet. */
+u_int32_t get_qattr_flags(vnode_t vnode)
+{
+    u_int32_t qFlags    = 0;
+    char* qAttr         = NULL;
+    size_t qAttrLength  = 0;
+    
+    qAttr = (char*)OSMalloc(QATTR_SIZE, return_mallocTag());
+    if (NULL == qAttr) {
+        goto exit;
+    }
+    
+    //get quarantine attributes
+    // ->if this 'fails', simply means binary doesn't have quarantine attributes
+    if(mac_vnop_getxattr(vnode, QFLAGS_STRING_ID, qAttr, QATTR_SIZE-1, &qAttrLength) != 0) {
+        LOG_DEBUG("mac_vnop_getxattr() didn't find any quarantine attributes");
+        goto exit;
+    }
+    
+    //null-terminate attributes
+    qAttr[qAttrLength] = 0x0;
+    LOG_DEBUG("Quarantine attributes: %s", qAttr);
+    
+    //grab flags
+    // ->format will look something like: 0002;567c4986;Safari;8122B05F-C448-4FA4-B2CC-30A8E50BE65B
+    if (sscanf(qAttr, "%04x", &qFlags) != 1) {
+        LOG_ERROR("sscanf('%s',...) failed\n", qAttr);
+        goto exit;
+    }
+    LOG_DEBUG("value for %s -> %x...\n", QFLAGS_STRING_ID, qFlags);
+    
+exit:
+    if (NULL != qAttr) {
+        OSFree(qAttr, QATTR_SIZE, return_mallocTag());
+        qAttr = NULL;
+    }
+    
+    return qFlags;
+}
+
+
+#pragma mark -
+#pragma mark TrustedBSD Hooks register functions
 
 /* Registers TrustedBSD MAC policy for ShellGuard. */
 kern_return_t register_mac_policy(void *d)

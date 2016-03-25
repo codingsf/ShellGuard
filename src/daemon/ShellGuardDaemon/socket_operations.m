@@ -6,8 +6,8 @@
 #include <sys/kern_control.h>
 #include <sys/sys_domain.h>
 
-#import <ShellGuardDaemon-Swift.h>
-#import "ShellGuardDaemon-Bridging-Header.h"
+#import <ShellGuard-Swift.h>
+#import "ShellGuard-Bridging-Header.h"
 
 
 

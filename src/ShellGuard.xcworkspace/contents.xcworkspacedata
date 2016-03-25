@@ -5,6 +5,6 @@
       location = "group:kext/ShellGuard.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:daemon/ShellGuardDaemon.xcodeproj">
+      location = "group:/Users/v/git/ShellGuard/src/daemon/ShellGuard.xcodeproj">
    </FileRef>
 </Workspace>

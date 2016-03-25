@@ -2,11 +2,18 @@
 #ifndef definitions_h
 #define definitions_h
 
+#include <sys/queue.h>
 
 #define ALLOW   0
 #define DENY    1
 
-#include <sys/queue.h>
+#define UNSIGNED        0
+#define SIGNED          1
+#define DMG_LOADED      2
+#define PREV_APPROVED   3
+
+#define QATTR_SIZE 0x1001
+#define QFLAGS_STRING_ID "com.apple.quarantine"
 
 #if DEBUG
 #define LOG_DEBUG(fmt, ...) printf("[SHELLGUARD DEBUG] " fmt "\n", ## __VA_ARGS__)

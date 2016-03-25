@@ -19,6 +19,28 @@ ShellGuard modes:
 - `ENFORCE`: Applies policies, and enforces them. The daemon notifies the user when a policy is enforced and logs the action. In this mode, ShellGuard _is_ protective and _blocks malware_.
 
 
+## Installation
+
+#### Disable SIP (partly!)
+Because we have not been able yet to obtain a kext signing cert, by default OS X will not allow us to load the ShellGuard kext. We have to enable `kext-dev-mode` for it to allow unsigned kext loading.
+
+- Go to Terminal.app
+- Type: `sudo nvram boot-args="debug=0x146 kext-dev-mode=1 keepsyms=1"`
+
+This enables `kext-dev-mode` and also enables symbolic links to ensure that crash logs are somewhat useful.
+
+Iff you are running OSX 10.11 (El Capitan), you will have to __partly__ disable System Integerty Protection (SIP):
+- Restart your Mac
+- Press `CMD + R` right after your Mac starts to boot up and shows the Apple logo
+- Your Mac will reboot into Recovery mode
+- Go to Utilities in the top menu bar and go to Terminal
+- Type: `csrutil enable --without-kext`
+- Type: `reboot`
+
+This will keep SIP intact, but only allow unsigned kext to be loaded. Note that, in order to load malicious kexts, the attacker has to be
+root, so your system is compromised anyway.
+
+
 ## Author
 [@_vivami](https://twitter.com/_vivami)
 
