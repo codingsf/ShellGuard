@@ -43,10 +43,10 @@ typedef struct process_t {
 
 kern_return_t cleanup_list_structure(void);
 kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid);
-kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode);
+kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode, uint32_t sign_status);
 int32_t get_process_path(pid_t pid, char* path_ptr);
-u_int32_t get_qattr_flags(vnode_t vnode);
-u_int32_t signed_binary(vnode_t vp, const char* path);
+uint32_t get_qattr_flags(vnode_t vnode);
+uint32_t signed_binary(vnode_t vp, const char* path);
 
 static int hook_exec(kauth_cred_t cred,
                      struct vnode *vp,
@@ -115,53 +115,77 @@ static int hook_exec(kauth_cred_t cred,
     ppid = proc_selfppid();
     proc_name(pid, procname, sizeof(procname));
     
-    LOG_DEBUG("New process: %s, pid: %d, ppid: %d.\n", procpath, pid, ppid);
+    //LOG_DEBUG("New process: %s, pid: %d, ppid: %d.\n", procpath, pid, ppid);
     
     /* Allow process executions from xpcproxy. */
     if (strcmp(procpath, XPCPROXY) == 0) {
         goto exit;
     }
     
-    LOG_DEBUG("%s is: %d.", procpath, signed_binary(vp, procpath));
-              
+    uint32_t sign_status = signed_binary(vp, procpath);
+    
+    switch (sign_status) {
+        case UNSIGNED:
+            LOG_INFO("%s is unsigned.", procpath);
+            break;
+        case SIGNED:
+            LOG_INFO("%s is signed.", procpath);
+            break;
+        case DMG_LOADED:
+            LOG_INFO("%s is loaded from a DMG. ShellGuard cannot check the DMG's signature.", procpath);
+            break;
+        case PREV_APPROVED:
+            LOG_INFO("%s was previously allowed to execute.", procpath);
+            break;
+        case DEFER:
+            LOG_INFO("%s has no quarantine flags set.", procpath);
+            break;
+        default:
+            break;
+    }
+
     store_new_process(procpath, pid, ppid);
     
-    
+    if (is_shell_blocked(procpath)) {
+        if (get_process_path(ppid, pprocpath) != 0) {
+            /* We don't know the path of the parent process. This is unlikely to happen,
+             * since ShellGuard starts before pretty much any other userland process (in production env).
+             * However, in testing phase it may occur processes were already running before we came into the kernel.
+             */
+            strncpy(pprocpath, "Unknown process", MAXPATHLEN);
+        }
+        /* Decide what the action for this process and parent process will be... */
+        action = filter(pprocpath, procpath);
+    }
     
     switch (state) {
         case ENFORCING:
-            if (is_shell_blocked(procpath)) {
-                if (get_process_path(ppid, pprocpath) != 0) {
-                    /* We don't know the path of the parent process. This is unlikely to happen,
-                     * since ShellGuard starts before pretty much any other userland process (in production env).
-                     * However, in testing phase it may occur processes were already running before we came into the kernel.
-                     */
-                    strncpy(pprocpath, "Unknown process", MAXPATHLEN);
-                }
-                action = filter(pprocpath, procpath);
-                if (action == DENY) {
-                    LOG_INFO("Blocking execution of %s by %s.\n Killing (likely) malicious parent process.", procpath, pprocpath);
-                    /* Send message to userland. */
-                    send_to_userspace(procpath, pprocpath, ENFORCING);
-                    /* Also kill the malicious parent (apart from launchd or kernel) that tries to spawn the shell. */
-                    if ((pid != 1) && (pid != 0))
-                        proc_signal(pid, SIGKILL);
-                }
+            if (sign_status == UNSIGNED) {
+                LOG_INFO("Blocking execution of %s by %s. %s is from the internet and unsigned.", procpath, pprocpath, procpath);
+                action = DENY;
+                send_to_userspace(procpath, pprocpath, ENFORCING, UNSIGNED);
+                goto exit;
+            }
+            if (action == DENY) {
+                LOG_INFO("Blocking execution of %s by %s. Killing (likely) malicious parent process.", procpath, pprocpath);
+                /* Send message to userland. */
+                send_to_userspace(procpath, pprocpath, ENFORCING, SIGNED);
+                /* Also kill the malicious parent (apart from launchd or kernel) that tries to spawn the shell. */
+                if ((pid != 1) && (pid != 0))
+                    proc_signal(pid, SIGKILL);
             }
             break;
         case COMPLAINING:
-            if (is_shell_blocked(procpath)) {
-                if (get_process_path(ppid, pprocpath) != 0) {
-                    strncpy(pprocpath, "Unknown process", MAXPATHLEN);
-                }
-                action = filter(pprocpath, procpath);
-                if (action == DENY) {
-                    LOG_INFO("Complaining: execution of %s by %s.\n Would kill (likely) malicious parent process.", procpath, pprocpath);
-                    /* Send message to userland. */
-                    send_to_userspace(procpath, pprocpath, COMPLAINING);
-                    /* Eventually allow the action, because we will only complain. */
-                    action = ALLOW;
-                }
+            if (sign_status == UNSIGNED) {
+                LOG_INFO("Complaining execution of %s by %s. %s is from the internet and unsigned.", procpath, pprocpath, procpath);
+                send_to_userspace(procpath, pprocpath, COMPLAINING, UNSIGNED);
+            }
+            if (action == DENY) {
+                LOG_INFO("Complaining: execution of %s by %s. Would kill (likely) malicious parent process.", procpath, pprocpath);
+                /* Send message to userland. */
+                send_to_userspace(procpath, pprocpath, COMPLAINING, SIGNED);
+                /* Eventually allow the action, because we will only complain. */
+                action = ALLOW;
             }
             break;
         default:
@@ -227,6 +251,7 @@ kern_return_t cleanup_list_structure(void)
     return KERN_SUCCESS;
 }
 
+
 /* Get process path from the list of currently running processes. This list contains only
  * the processes that executed *after* ShellGuard was loaded into the kernel.
  */
@@ -245,27 +270,32 @@ int32_t get_process_path(pid_t pid, char* path_ptr)
     }
     lck_mtx_unlock(proc_list_lock);
     return 1;
-
 }
 
+
 /* Sends message/event to userspace over socket. */
-kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode)
+kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode, uint32_t sign_status)
 {
     kern_space_info_message kern_info_m = {0};
     snprintf(kern_info_m.message, sizeof(kern_info_m.message) - 4, "%s;%s;", procpath, path);
     kern_info_m.mode = mode;
+    kern_info_m.signed_bin = sign_status;
     queue_userland_data(&kern_info_m);
     return KERN_SUCCESS;
 }
 
+
 /* Checks if the binary is signed. */
-u_int32_t signed_binary(vnode_t vp, const char* path)
+uint32_t signed_binary(vnode_t vp, const char* path)
 {
-    u_int32_t has_q_flags = get_qattr_flags(vp);
+    uint32_t has_q_flags = get_qattr_flags(vp);
     
     if (has_q_flags == FALSE) {
         if (strncmp("/Volumes/", path, strlen("/Volumes/")) == 0) {
             return DMG_LOADED;
+        } else {
+            //LOG_DEBUG("No quarantine flags.");
+            return DEFER;
         }
     }
     /* CoreServicesUIAgent (user-mode) sets flags to 0x40 when user clicks 'allow', so just allow such binaries. */
@@ -273,45 +303,41 @@ u_int32_t signed_binary(vnode_t vp, const char* path)
         return PREV_APPROVED;
     }
     
+    /* Lock vnode/ */
     lck_mtx_lock((lck_mtx_t *)vp);
-    
-    //init offset pointer
     unsigned char* offsetPointer = (unsigned char*)(vnode_t)vp;
     
-    //get pointer to struct ubc_info in vnode struct
-    // ->disasm from kernel:  mov rax, [vnode+70h]
+    /* Get pointer to struct ubc_info in vnode struct ->disasm from kernel:  mov rax, [vnode+70h] */
     offsetPointer += 0x70;
     if(*(unsigned long*)(offsetPointer) == 0) {
         lck_mtx_unlock((lck_mtx_t *)vp);
-        return SIGNED;
+        return DEFER;
     }
-    LOG_DEBUG("vnode 'vu_ubcinfo': %p, points to: %p\n", offsetPointer, (void*)*(unsigned long*)(offsetPointer));
+    //LOG_DEBUG("vnode 'vu_ubcinfo': %p, points to: %p\n", offsetPointer, (void*)*(unsigned long*)(offsetPointer));
     
-    //dref pointer
-    // ->get addr of struct ubc_info
+    /* Get addr of struct ubc_info. */
     offsetPointer = (unsigned char*)*(unsigned long*)(offsetPointer);
     
-    //get pointer to cs_blob struct from struct ubc_info
-    // ->disasm from kernel: mov rax, [ubc_info+50h]
+    /* Get pointer to cs_blob struct from struct ubc_info ->disasm from kernel: mov rax, [ubc_info+50h] */
     offsetPointer += 0x50;
     
-    LOG_DEBUG("ubc_info 'cs_blob': %p\n", offsetPointer);
+    //LOG_DEBUG("ubc_info 'cs_blob': %p\n", offsetPointer);
     
     //non-null csBlogs means process's binary is signed
     // ->note: yah, its a limitation that the binary could be signed, but invalidly
     if(*(unsigned long*)(offsetPointer) == 0) {
-        LOG_DEBUG("%s is signed (non-NULL cs_blob), so allowing\n", path);
         lck_mtx_unlock((lck_mtx_t *)vp);
         return SIGNED;
     }
     
     lck_mtx_unlock((lck_mtx_t *)vp);
     
-    return SIGNED;
+    /* Binary is from the Internet and unsigned. */
+    return UNSIGNED;
 }
 
 /* Check if binary has Quarantine flags set, meaning it has been downloaded from the Internet. */
-u_int32_t get_qattr_flags(vnode_t vnode)
+uint32_t get_qattr_flags(vnode_t vnode)
 {
     u_int32_t qFlags    = 0;
     char* qAttr         = NULL;
@@ -325,7 +351,7 @@ u_int32_t get_qattr_flags(vnode_t vnode)
     //get quarantine attributes
     // ->if this 'fails', simply means binary doesn't have quarantine attributes
     if(mac_vnop_getxattr(vnode, QFLAGS_STRING_ID, qAttr, QATTR_SIZE-1, &qAttrLength) != 0) {
-        LOG_DEBUG("mac_vnop_getxattr() didn't find any quarantine attributes");
+        //LOG_DEBUG("mac_vnop_getxattr() didn't find any quarantine attributes");
         goto exit;
     }
     
@@ -339,7 +365,7 @@ u_int32_t get_qattr_flags(vnode_t vnode)
         LOG_ERROR("sscanf('%s',...) failed\n", qAttr);
         goto exit;
     }
-    LOG_DEBUG("value for %s -> %x...\n", QFLAGS_STRING_ID, qFlags);
+    //LOG_DEBUG("value for %s -> %x...\n", QFLAGS_STRING_ID, qFlags);
     
 exit:
     if (NULL != qAttr) {

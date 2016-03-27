@@ -17,6 +17,8 @@
 #define COMPLAINING     7
 #define COMPLAINING_OFF 8
 
+#define UNSIGNED        0
+
 
 typedef struct {
     char    procname[MAXPATHLEN];
@@ -31,6 +33,7 @@ typedef struct  {
 
 typedef struct {
     uint32_t    mode;
+    uint32_t    signed_bin;
     char        message[1024];
 } kern_space_info_message;
 

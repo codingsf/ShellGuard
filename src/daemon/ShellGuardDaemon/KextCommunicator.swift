@@ -77,32 +77,39 @@ class KextCommunicator {
     let PROCNAME    = 0
     let SHELL       = 1
     
-//    let ENFORCING   = 4
-//    let COMPLAING   = 7
-    
     let logger = Logger.sharedInstance
 
-    @objc func receiveMessageFromKext(message: String, mode: Int) {
+    @objc func receiveMessageFromKext(message: String, mode: Int, signed_bin: Int) {
+        //print "Message: \(message)"
         let message_parts = message.componentsSeparatedByString(";")
         guard message_parts.count == 3 else {
             print("[ERROR] Incorrectly formatted message: \(message_parts)")
             return
         }
-        switch (Int32(mode)) {
-            case ENFORCING:
+        switch ((Int32(mode), Bool(signed_bin))) {
+            case (ENFORCING, true):
+                print("[!!] \(message_parts[SHELL]) by \(message_parts[PROCNAME]) was unsigned. ShellGuard blocked this.")
+                break
+            case (ENFORCING, false):
                 print("[!!] \(message_parts[PROCNAME]) tried to execute \(message_parts[SHELL]). ShellGuard blocked this.")
                 break
-            case COMPLAINING:
+            case (COMPLAINING,true):
+                print("[!] \(message_parts[SHELL]) by \(message_parts[PROCNAME]) was unsigned. ShellGuard just complains.")
+                break
+            case (COMPLAINING, false):
                 print("[!]  \(message_parts[PROCNAME]) tried to execute \(message_parts[SHELL]). ShellGuard just complains.")
                 break
             default:
                 return
         }
-        spawnNotification(message_parts, mode: mode);
+        spawnNotification(message_parts, mode: mode, signed: signed_bin);
     }
     
-    func spawnNotification(message: [String], mode: Int) {
+    func spawnNotification(m: [String], mode: Int, signed: Int) {
         var notificationMode: String
+        let notification = NSUserNotification()
+        notification.title = "ShellGuard"
+        var message = ""
         switch (Int32(mode)) {
             case COMPLAINING:
                 notificationMode = "Complaining:"
@@ -113,9 +120,14 @@ class KextCommunicator {
             default:
                 return
         }
-        let notification = NSUserNotification()
-        notification.title = "ShellGuard"
-        let message = "\(notificationMode) \(message[PROCNAME]) executing \(message[SHELL]). \(message[PROCNAME]) may be malicious."
+        switch (Bool(signed)) {
+            case true:
+                message = "\(notificationMode) \(m[SHELL]) was unsigned and may be malicious."
+                break;
+            case false:
+                message = "\(notificationMode) \(m[PROCNAME]) executing \(m[SHELL]). \(m[PROCNAME]) may be malicious."
+                break;
+        }
         notification.informativeText = message
         notification.soundName = nil
         NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(notification)

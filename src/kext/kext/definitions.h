@@ -11,6 +11,7 @@
 #define SIGNED          1
 #define DMG_LOADED      2
 #define PREV_APPROVED   3
+#define DEFER           4
 
 #define QATTR_SIZE 0x1001
 #define QFLAGS_STRING_ID "com.apple.quarantine"
