@@ -26,6 +26,7 @@
 
 
 static const char   XPCPROXY[]      = "/usr/libexec/xpcproxy";
+static uint32_t     LAUNCHD_PID     = 1;
 extern int32_t      state;
 /* This mutex protects the LIST that holds the path's processes. */
 static lck_mtx_t    *proc_list_lock = NULL;
@@ -43,7 +44,7 @@ typedef struct process_t {
 
 kern_return_t cleanup_list_structure(void);
 kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid);
-kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode, uint32_t sign_status);
+kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode);
 int32_t get_process_path(pid_t pid, char* path_ptr);
 uint32_t get_qattr_flags(vnode_t vnode);
 uint32_t signed_binary(vnode_t vp, const char* path);
@@ -115,36 +116,17 @@ static int hook_exec(kauth_cred_t cred,
     ppid = proc_selfppid();
     proc_name(pid, procname, sizeof(procname));
     
-    //LOG_DEBUG("New process: %s, pid: %d, ppid: %d.\n", procpath, pid, ppid);
-    
-    /* Allow process executions from xpcproxy. */
+    /* Allow process executions from xpcproxy and launchd. */
     if (strcmp(procpath, XPCPROXY) == 0) {
         goto exit;
     }
-    
-    uint32_t sign_status = signed_binary(vp, procpath);
-    
-    switch (sign_status) {
-        case UNSIGNED:
-            LOG_INFO("%s is unsigned.", procpath);
-            break;
-        case SIGNED:
-            LOG_INFO("%s is signed.", procpath);
-            break;
-        case DMG_LOADED:
-            LOG_INFO("%s is loaded from a DMG. ShellGuard cannot check the DMG's signature.", procpath);
-            break;
-        case PREV_APPROVED:
-            LOG_INFO("%s was previously allowed to execute.", procpath);
-            break;
-        case DEFER:
-            LOG_INFO("%s has no quarantine flags set.", procpath);
-            break;
-        default:
-            break;
-    }
 
     store_new_process(procpath, pid, ppid);
+    
+    /* We're not interested in authorizing processes spawned by launchd. */
+    if (ppid == LAUNCHD_PID) {
+        goto exit;
+    }
     
     if (is_shell_blocked(procpath)) {
         if (get_process_path(ppid, pprocpath) != 0) {
@@ -160,30 +142,20 @@ static int hook_exec(kauth_cred_t cred,
     
     switch (state) {
         case ENFORCING:
-            if (sign_status == UNSIGNED) {
-                LOG_INFO("Blocking execution of %s by %s. %s is from the internet and unsigned.", procpath, pprocpath, procpath);
-                action = DENY;
-                send_to_userspace(procpath, pprocpath, ENFORCING, UNSIGNED);
-                goto exit;
-            }
             if (action == DENY) {
                 LOG_INFO("Blocking execution of %s by %s. Killing (likely) malicious parent process.", procpath, pprocpath);
                 /* Send message to userland. */
-                send_to_userspace(procpath, pprocpath, ENFORCING, SIGNED);
+                send_to_userspace(procpath, pprocpath, ENFORCING);
                 /* Also kill the malicious parent (apart from launchd or kernel) that tries to spawn the shell. */
                 if ((pid != 1) && (pid != 0))
                     proc_signal(pid, SIGKILL);
             }
             break;
         case COMPLAINING:
-            if (sign_status == UNSIGNED) {
-                LOG_INFO("Complaining execution of %s by %s. %s is from the internet and unsigned.", procpath, pprocpath, procpath);
-                send_to_userspace(procpath, pprocpath, COMPLAINING, UNSIGNED);
-            }
             if (action == DENY) {
                 LOG_INFO("Complaining: execution of %s by %s. Would kill (likely) malicious parent process.", procpath, pprocpath);
                 /* Send message to userland. */
-                send_to_userspace(procpath, pprocpath, COMPLAINING, SIGNED);
+                send_to_userspace(procpath, pprocpath, COMPLAINING);
                 /* Eventually allow the action, because we will only complain. */
                 action = ALLOW;
             }
@@ -274,12 +246,12 @@ int32_t get_process_path(pid_t pid, char* path_ptr)
 
 
 /* Sends message/event to userspace over socket. */
-kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode, uint32_t sign_status)
+kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode)
 {
     kern_space_info_message kern_info_m = {0};
     snprintf(kern_info_m.message, sizeof(kern_info_m.message) - 4, "%s;%s;", procpath, path);
     kern_info_m.mode = mode;
-    kern_info_m.signed_bin = sign_status;
+    kern_info_m.signed_bin = SIGNED;
     queue_userland_data(&kern_info_m);
     return KERN_SUCCESS;
 }
@@ -348,21 +320,16 @@ uint32_t get_qattr_flags(vnode_t vnode)
         goto exit;
     }
     
-    //get quarantine attributes
-    // ->if this 'fails', simply means binary doesn't have quarantine attributes
-    if(mac_vnop_getxattr(vnode, QFLAGS_STRING_ID, qAttr, QATTR_SIZE-1, &qAttrLength) != 0) {
-        //LOG_DEBUG("mac_vnop_getxattr() didn't find any quarantine attributes");
+    /* Get quarantine attributes. If this 'fails', simply means binary doesn't have quarantine attributes. */
+    if (mac_vnop_getxattr(vnode, QFLAGS_STRING_ID, qAttr, QATTR_SIZE-1, &qAttrLength) != 0) {
         goto exit;
     }
-    
-    //null-terminate attributes
+
     qAttr[qAttrLength] = 0x0;
     LOG_DEBUG("Quarantine attributes: %s", qAttr);
     
-    //grab flags
-    // ->format will look something like: 0002;567c4986;Safari;8122B05F-C448-4FA4-B2CC-30A8E50BE65B
+    /* grab flags, format will look something like: 0002;567c4986;Safari;8122B05F-C448-4FA4-B2CC-30A8E50BE65B */
     if (sscanf(qAttr, "%04x", &qFlags) != 1) {
-        LOG_ERROR("sscanf('%s',...) failed\n", qAttr);
         goto exit;
     }
     //LOG_DEBUG("value for %s -> %x...\n", QFLAGS_STRING_ID, qFlags);

@@ -19,7 +19,7 @@ static int ctl_set(kern_ctl_ref ctl_ref, u_int32_t unit, void *unitinfo, int opt
 
 
 /* some globals */
-static const char VALID_CLIENT_PATH[]   = "/Applications/ShellGuard/Contents/MacOS/ShellGuard";
+static const char VALID_CLIENT_PATH[]   = "/Applications/ShellGuard.app/Contents/MacOS/ShellGuard";
 static int32_t g_number_of_clients;
 static kern_ctl_ref g_ctl_ref;
 static u_int32_t g_client_unit          = 0;

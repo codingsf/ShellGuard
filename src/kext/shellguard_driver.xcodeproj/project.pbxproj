@@ -20,7 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		15578ADB1C23F68300F447E9 /* ShellGuard.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShellGuard.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		15578ADB1C23F68300F447E9 /* shellguard_driver.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = shellguard_driver.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		15D705E81C5FC051000846DC /* definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = definitions.h; path = kext/definitions.h; sourceTree = SOURCE_ROOT; };
 		15D705E91C5FC051000846DC /* shellguard.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = shellguard.c; path = kext/shellguard.c; sourceTree = SOURCE_ROOT; };
 		15D705EA1C5FC051000846DC /* shellguard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shellguard.h; path = kext/shellguard.h; sourceTree = SOURCE_ROOT; };
@@ -56,7 +56,7 @@
 		15578ADC1C23F68300F447E9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				15578ADB1C23F68300F447E9 /* ShellGuard.kext */,
+				15578ADB1C23F68300F447E9 /* shellguard_driver.kext */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,9 +98,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		15578ADA1C23F68300F447E9 /* ShellGuard */ = {
+		15578ADA1C23F68300F447E9 /* shellguard_driver */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 15578AE31C23F68300F447E9 /* Build configuration list for PBXNativeTarget "ShellGuard" */;
+			buildConfigurationList = 15578AE31C23F68300F447E9 /* Build configuration list for PBXNativeTarget "shellguard_driver" */;
 			buildPhases = (
 				15578AD61C23F68300F447E9 /* Sources */,
 				15578AD71C23F68300F447E9 /* Frameworks */,
@@ -111,9 +111,9 @@
 			);
 			dependencies = (
 			);
-			name = ShellGuard;
+			name = shellguard_driver;
 			productName = driver;
-			productReference = 15578ADB1C23F68300F447E9 /* ShellGuard.kext */;
+			productReference = 15578ADB1C23F68300F447E9 /* shellguard_driver.kext */;
 			productType = "com.apple.product-type.kernel-extension";
 		};
 /* End PBXNativeTarget section */
@@ -130,7 +130,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 15578AD51C23F68300F447E9 /* Build configuration list for PBXProject "ShellGuard" */;
+			buildConfigurationList = 15578AD51C23F68300F447E9 /* Build configuration list for PBXProject "shellguard_driver" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -142,7 +142,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				15578ADA1C23F68300F447E9 /* ShellGuard */,
+				15578ADA1C23F68300F447E9 /* shellguard_driver */,
 			);
 		};
 /* End PBXProject section */
@@ -189,7 +189,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Developer ID Application: Vincent Van Mieghem (4GY79867VV)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -233,7 +233,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer: Vincent Van Mieghem (352HXLRFA6)";
+				CODE_SIGN_IDENTITY = "Developer ID Application: Vincent Van Mieghem (4GY79867VV)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -257,7 +257,7 @@
 		15578AE41C23F68300F447E9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "Developer ID Application: Vincent Van Mieghem (4GY79867VV)";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = kext/Info.plist;
 				MODULE_NAME = com.vivami.shellguard;
@@ -265,7 +265,7 @@
 				MODULE_STOP = shellguard_stop;
 				MODULE_VERSION = 1.0.0d1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.shellguard;
-				PRODUCT_NAME = ShellGuard;
+				PRODUCT_NAME = shellguard_driver;
 				WRAPPER_EXTENSION = kext;
 			};
 			name = Debug;
@@ -273,7 +273,7 @@
 		15578AE51C23F68300F447E9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "Developer ID Application: Vincent Van Mieghem (4GY79867VV)";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = kext/Info.plist;
 				MODULE_NAME = com.vivami.shellguard;
@@ -281,7 +281,7 @@
 				MODULE_STOP = shellguard_stop;
 				MODULE_VERSION = 1.0.0d1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vivami.shellguard;
-				PRODUCT_NAME = ShellGuard;
+				PRODUCT_NAME = shellguard_driver;
 				WRAPPER_EXTENSION = kext;
 			};
 			name = Release;
@@ -289,7 +289,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		15578AD51C23F68300F447E9 /* Build configuration list for PBXProject "ShellGuard" */ = {
+		15578AD51C23F68300F447E9 /* Build configuration list for PBXProject "shellguard_driver" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				15578AE11C23F68300F447E9 /* Debug */,
@@ -298,7 +298,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		15578AE31C23F68300F447E9 /* Build configuration list for PBXNativeTarget "ShellGuard" */ = {
+		15578AE31C23F68300F447E9 /* Build configuration list for PBXNativeTarget "shellguard_driver" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				15578AE41C23F68300F447E9 /* Debug */,

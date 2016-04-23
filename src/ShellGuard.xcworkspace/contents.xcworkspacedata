@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:kext/ShellGuard.xcodeproj">
+      location = "group:/Users/v/git/ShellGuard/src/kext/shellguard_driver.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:/Users/v/git/ShellGuard/src/daemon/ShellGuard.xcodeproj">

@@ -79,33 +79,27 @@ class KextCommunicator {
     
     let logger = Logger.sharedInstance
 
-    @objc func receiveMessageFromKext(message: String, mode: Int, signed_bin: Int) {
-        //print "Message: \(message)"
+    @objc func receiveMessageFromKext(message: String, mode: Int) {
+        //print("Message: \(message)")
         let message_parts = message.componentsSeparatedByString(";")
         guard message_parts.count == 3 else {
             print("[ERROR] Incorrectly formatted message: \(message_parts)")
             return
         }
-        switch ((Int32(mode), Bool(signed_bin))) {
-            case (ENFORCING, true):
-                print("[!!] \(message_parts[SHELL]) by \(message_parts[PROCNAME]) was unsigned. ShellGuard blocked this.")
-                break
-            case (ENFORCING, false):
+        switch (Int32(mode)) {
+            case ENFORCING:
                 print("[!!] \(message_parts[PROCNAME]) tried to execute \(message_parts[SHELL]). ShellGuard blocked this.")
                 break
-            case (COMPLAINING,true):
-                print("[!] \(message_parts[SHELL]) by \(message_parts[PROCNAME]) was unsigned. ShellGuard just complains.")
-                break
-            case (COMPLAINING, false):
+            case COMPLAINING:
                 print("[!]  \(message_parts[PROCNAME]) tried to execute \(message_parts[SHELL]). ShellGuard just complains.")
                 break
             default:
                 return
         }
-        spawnNotification(message_parts, mode: mode, signed: signed_bin);
+        spawnNotification(message_parts, mode: mode);
     }
     
-    func spawnNotification(m: [String], mode: Int, signed: Int) {
+    func spawnNotification(m: [String], mode: Int) {
         var notificationMode: String
         let notification = NSUserNotification()
         notification.title = "ShellGuard"
@@ -120,14 +114,7 @@ class KextCommunicator {
             default:
                 return
         }
-        switch (Bool(signed)) {
-            case true:
-                message = "\(notificationMode) \(m[SHELL]) was unsigned and may be malicious."
-                break;
-            case false:
-                message = "\(notificationMode) \(m[PROCNAME]) executing \(m[SHELL]). \(m[PROCNAME]) may be malicious."
-                break;
-        }
+        message = "\(notificationMode) \(m[PROCNAME]) executing \(m[SHELL]). \(m[PROCNAME]) may be malicious."
         notification.informativeText = message
         notification.soundName = nil
         NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(notification)
