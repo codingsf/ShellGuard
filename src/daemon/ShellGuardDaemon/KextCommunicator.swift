@@ -40,7 +40,7 @@ class KextCommunicator {
             connect(g_socket, UnsafePointer<sockaddr>($0), socklen_t(sizeofValue(socketAddressControl)))
         }
         
-        if let errorString = String(UTF8String: strerror(errno)) where connectResult < 0 {
+        if let errorString = String(validatingUTF8: strerror(errno)) where connectResult < 0 {
             print("Failed to create a utun interface: \(errorString)")
             close(g_socket)
             return false
@@ -57,12 +57,12 @@ class KextCommunicator {
     /*
      * Sends configs for kext via Obj-C bridging to C/kext.
      */
-    func setKextMode(cmd: UInt32) {
+    func setKextMode(_ cmd: UInt32) {
         _ = send_to_kernel(Int32(g_socket), cmd, nil)
     }
     
     
-    func sendListToKext(list: [Item], mode: Int32) {
+    func sendListToKext(_ list: [Item], mode: Int32) {
         for item in list {
             print(item.toString())
             _ = send_to_kernel(Int32(g_socket), UInt32(mode), toEntryStruct(item.processName, item.shell))
@@ -79,9 +79,9 @@ class KextCommunicator {
     
     let logger = Logger.sharedInstance
 
-    @objc func receiveMessageFromKext(message: String, mode: Int) {
+    @objc func receiveMessageFromKext(_ message: String, mode: Int) {
         //print("Message: \(message)")
-        let message_parts = message.componentsSeparatedByString(";")
+        let message_parts = message.components(separatedBy: ";")
         guard message_parts.count == 3 else {
             print("[ERROR] Incorrectly formatted message: \(message_parts)")
             return
@@ -99,7 +99,7 @@ class KextCommunicator {
         spawnNotification(message_parts, mode: mode);
     }
     
-    func spawnNotification(m: [String], mode: Int) {
+    func spawnNotification(_ m: [String], mode: Int) {
         var notificationMode: String
         let notification = NSUserNotification()
         notification.title = "ShellGuard"
@@ -117,8 +117,8 @@ class KextCommunicator {
         message = "\(notificationMode) \(m[PROCNAME]) executing \(m[SHELL]). \(m[PROCNAME]) may be malicious."
         notification.informativeText = message
         notification.soundName = nil
-        NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(notification)
-        logger.log(message)
+        NSUserNotificationCenter.default().deliver(notification)
+        _ = logger.log(message)
     }
 }
 

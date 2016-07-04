@@ -17,10 +17,10 @@ class KeychainStore {
     static let sharedInstance = KeychainStore()
     
     /* Set key:String value:String pair in Keychain. */
-    func set(value: String, forKey key: String) -> Bool {
-        if let value = value.dataUsingEncoding(NSUTF8StringEncoding) {
+    func set(_ value: String, forKey key: String) -> Bool {
+        if let value = value.data(using: String.Encoding.utf8) {
             
-            delete(key) // Delete any existing key before saving it
+            _ = delete(key) // Delete any existing key before saving it
             
             var query = [
                 KeychainSwiftConstants.klass       : kSecClassGenericPassword,
@@ -28,8 +28,8 @@ class KeychainStore {
                 KeychainSwiftConstants.valueData   : value,
                 KeychainSwiftConstants.accessible  : String(kSecAttrAccessibleAfterFirstUnlock)
             ]
-            query = addAccessGroupWhenPresent(query)
-            lastResultCode = SecItemAdd(query as CFDictionaryRef, nil)
+            query = addAccessGroupWhenPresent(query as! [String : NSObject])
+            lastResultCode = SecItemAdd(query as CFDictionary, nil)
             
             return lastResultCode == noErr
         }
@@ -37,9 +37,9 @@ class KeychainStore {
     }
     
     /* Get value for key:String from Keychain. */
-    func get(key: String) -> String? {
+    func get(_ key: String) -> String? {
         if let data = getData(key) {
-            if let currentString = NSString(data: data, encoding: NSUTF8StringEncoding) as? String {
+            if let currentString = NSString(data: data, encoding: String.Encoding.utf8.rawValue) as? String {
                 return currentString
             }
             lastResultCode = -67853 // errSecInvalidEncoding
@@ -48,7 +48,7 @@ class KeychainStore {
     }
     
     /* Get NSData object from Keychain. */
-    func getData(key: String) -> NSData? {
+    func getData(_ key: String) -> Data? {
         
         var query: [String: NSObject] = [
             KeychainSwiftConstants.klass       : kSecClassGenericPassword,
@@ -62,13 +62,13 @@ class KeychainStore {
         lastResultCode = withUnsafeMutablePointer(&result) {
             SecItemCopyMatching(query, UnsafeMutablePointer($0))
         }
-        if lastResultCode == noErr { return result as? NSData }
+        if lastResultCode == noErr { return result as? Data }
         
         return nil
     }
     
     /* Delete key:String from Keychain. */
-    func delete(key: String) -> Bool {
+    func delete(_ key: String) -> Bool {
         
         var query: [String: NSObject] = [
             KeychainSwiftConstants.klass       : kSecClassGenericPassword,
@@ -76,13 +76,13 @@ class KeychainStore {
         
         query = addAccessGroupWhenPresent(query)
         
-        lastResultCode = SecItemDelete(query as CFDictionaryRef)
+        lastResultCode = SecItemDelete(query as CFDictionary)
         
         return lastResultCode == noErr
     }
     
     /* Retrieve AccesGroup for a Keychain item. */
-    func addAccessGroupWhenPresent(items: [String: NSObject]) -> [String: NSObject] {
+    func addAccessGroupWhenPresent(_ items: [String: NSObject]) -> [String: NSObject] {
         guard let accessGroup = accessGroup else { return items }
         
         var result: [String: NSObject] = items
@@ -113,7 +113,7 @@ struct KeychainSwiftConstants {
     // Used for specifying a value when setting a Keychain value.
     static var valueData: String { return toString(kSecValueData) }
     
-    static func toString(value: CFStringRef) -> String {
+    static func toString(_ value: CFString) -> String {
         return value as String
     }
 }

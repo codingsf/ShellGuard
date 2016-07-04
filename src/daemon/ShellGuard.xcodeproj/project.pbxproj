@@ -207,12 +207,13 @@
 					enforce,
 				);
 				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = vivami;
 				TargetAttributes = {
 					58A9BBFC1C6B297D000B3AAD = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = 4GY79867VV;
+						LastSwiftMigration = 0800;
 					};
 					58A9BC0B1C6B297D000B3AAD = {
 						CreatedOnToolsVersion = 7.2.1;
@@ -424,6 +425,7 @@
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "ShellGuardDaemon/ShellGuard-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -442,6 +444,8 @@
 				PRODUCT_NAME = ShellGuard;
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "ShellGuardDaemon/ShellGuard-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

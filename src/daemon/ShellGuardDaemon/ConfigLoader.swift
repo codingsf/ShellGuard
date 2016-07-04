@@ -41,10 +41,10 @@ class ConfigLoader {
     /* 
      * Responsible for parsing the JSON config file and creating Whitelist/Shell objects from them.
      */
-    func loadConfigFile(fileLocation: String) {
-        let location = NSString(string:fileLocation).stringByExpandingTildeInPath
-        if let fileContent = try? NSString(contentsOfFile: location, encoding: NSUTF8StringEncoding) as String {
-            if let dataFromString = fileContent.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
+    func loadConfigFile(_ fileLocation: String) {
+        let location = NSString(string:fileLocation).expandingTildeInPath
+        if let fileContent = try? NSString(contentsOfFile: location, encoding: String.Encoding.utf8.rawValue) as String {
+            if let dataFromString = fileContent.data(using: String.Encoding.utf8, allowLossyConversion: false) {
                 let json = JSON(data: dataFromString)
                 if json != JSON.null {
                     for (_, value) in json {
@@ -81,9 +81,9 @@ class ConfigLoader {
     /*
     * Check wether the config is not malformed and convert to Item object. Below are some helper functions.
     */
-    func validateItem(stringConf: [String]) {
+    func validateItem(_ stringConf: [String]) {
         /* check length of input */
-        for (index, r) in stringConf.enumerate() {
+        for (index, r) in stringConf.enumerated() {
             guard r.trim().isSmallerThan(structLengths[index]) else {
                 malformedItem(stringConf)
                 return
@@ -93,7 +93,7 @@ class ConfigLoader {
                                     shell: stringConf[SHELL].trim()))
     }
     
-    func validateBlacklistedShell(shell: String) {
+    func validateBlacklistedShell(_ shell: String) {
         guard shell.trim().isSmallerThan(MAX_PATH_LEN) else {
             malformedItem([shell])
             return
@@ -101,7 +101,7 @@ class ConfigLoader {
         shellList.append(Item(proc: "N/A", shell: shell))
     }
     
-    func malformedItem(s: [String]) {
+    func malformedItem(_ s: [String]) {
         var res = ""
         for i in s {
             res += ", " + i
