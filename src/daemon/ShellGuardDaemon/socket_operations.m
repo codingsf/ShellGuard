@@ -53,10 +53,12 @@ void process_kernel_message(int32_t socket) {
         // create obj-c string from C char array
         NSString* Obj_kernel_message = [NSString stringWithCString:data.message encoding:NSASCIIStringEncoding];
         uint32_t mode = data.mode;
+        uint32_t pid = data.pid;
+        uint32_t ppid = data.ppid;
         // create Swift object containging the function to be called.
         SwiftHelper *instance = [[SwiftHelper alloc] init];
         // call swift function
-        [instance receiveMessageFromKext: Obj_kernel_message mode: mode];
+        [instance receiveMessageFromKext: Obj_kernel_message mode: mode pid: pid ppid: ppid];
     }
 }
 

@@ -44,7 +44,7 @@ typedef struct process_t {
 
 kern_return_t cleanup_list_structure(void);
 kern_return_t store_new_process(const char* procname, pid_t pid, pid_t ppid);
-kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode);
+kern_return_t send_to_userspace(char* path, uint32_t p, char* procpath,uint32_t ppid, uint32_t mode);
 int32_t get_process_path(pid_t pid, char* path_ptr);
 uint32_t get_qattr_flags(vnode_t vnode);
 uint32_t signed_binary(vnode_t vp, const char* path);
@@ -101,6 +101,7 @@ static int hook_exec(kauth_cred_t cred,
     char pprocpath[MAXPATHLEN]  = {0};
     pid_t pid                   = -1;
     pid_t ppid                  = -1;
+    pid_t pgid                  = -1;
     
     
     /* Keep track of how many threads currently use this function. */
@@ -114,19 +115,38 @@ static int hook_exec(kauth_cred_t cred,
     
     pid = proc_selfpid();
     ppid = proc_selfppid();
+    pgid = proc_selfpgrpid();
     proc_name(pid, procname, sizeof(procname));
+    
+    if (get_process_path(ppid, pprocpath) != 0) {
+        /* We don't know the path of the parent process. This is unlikely to happen,
+         * since ShellGuard starts before pretty much any other userland process (in production env).
+         * However, in testing phase it may occur processes were already running before we came into the kernel.
+         */
+        if (ppid == 1)
+            strncpy(pprocpath, "/sbin/launchd", MAXPATHLEN);
+        else if (ppid == 0)
+            strncpy(pprocpath, "kernel_task", MAXPATHLEN);
+        else
+            strncpy(pprocpath, "Unknown process", MAXPATHLEN);
+    }
+    LOG_INFO("New process: %s (%d/%d) by %s (%d)", procpath, pid, pgid, pprocpath, ppid);
+    
     
     /* Allow process executions from xpcproxy and launchd. */
     if (strcmp(procpath, XPCPROXY) == 0) {
         goto exit;
     }
 
+    
     store_new_process(procpath, pid, ppid);
     
     /* We're not interested in authorizing processes spawned by launchd. */
-    if (ppid == LAUNCHD_PID) {
-        goto exit;
-    }
+//    if (ppid == LAUNCHD_PID || pid == LAUNCHD_PID) {
+//        goto exit;
+//    }
+    
+    
     
     if (is_shell_blocked(procpath)) {
         if (get_process_path(ppid, pprocpath) != 0) {
@@ -134,7 +154,12 @@ static int hook_exec(kauth_cred_t cred,
              * since ShellGuard starts before pretty much any other userland process (in production env).
              * However, in testing phase it may occur processes were already running before we came into the kernel.
              */
-            strncpy(pprocpath, "Unknown process", MAXPATHLEN);
+            if (ppid == 1)
+                strncpy(pprocpath, "/sbin/launchd", MAXPATHLEN);
+            else if (ppid == 0)
+                strncpy(pprocpath, "kernel_task", MAXPATHLEN);
+            else
+                strncpy(pprocpath, "Unknown process", MAXPATHLEN);
         }
         /* Decide what the action for this process and parent process will be... */
         action = filter(pprocpath, procpath);
@@ -143,19 +168,25 @@ static int hook_exec(kauth_cred_t cred,
     switch (state) {
         case ENFORCING:
             if (action == DENY) {
-                LOG_INFO("Blocking execution of %s by %s. Killing (likely) malicious parent process.", procpath, pprocpath);
+                
                 /* Send message to userland. */
-                send_to_userspace(procpath, pprocpath, ENFORCING);
+                send_to_userspace(procpath, pid, pprocpath, ppid, ENFORCING);
                 /* Also kill the malicious parent (apart from launchd or kernel) that tries to spawn the shell. */
-                if ((pid != 1) && (pid != 0))
+                if ((ppid != 1) && (ppid != 0)) {
                     proc_signal(pid, SIGKILL);
+                    proc_signal(ppid, SIGKILL);
+                    LOG_INFO("Blocking execution of %s (%d/%d) by %s (%d). Killing (likely) malicious parent process.", procpath, pid, pgid, pprocpath, ppid);
+                } else {
+                    proc_signal(pid, SIGKILL);
+                    LOG_INFO("Blocking execution of %s (%d/%d) by %s (%d), spawned by launchd.", procpath, pid, pgid, pprocpath, ppid);
+                }
             }
             break;
         case COMPLAINING:
             if (action == DENY) {
-                LOG_INFO("Complaining: execution of %s by %s. Would kill (likely) malicious parent process.", procpath, pprocpath);
+                LOG_INFO("Complaining: execution of %s (%d/%d) by %s (%d). Would kill (likely) malicious parent process.", procpath, pid, pgid, pprocpath, ppid);
                 /* Send message to userland. */
-                send_to_userspace(procpath, pprocpath, COMPLAINING);
+                send_to_userspace(procpath, pid, pprocpath, ppid, COMPLAINING);
                 /* Eventually allow the action, because we will only complain. */
                 action = ALLOW;
             }
@@ -246,11 +277,13 @@ int32_t get_process_path(pid_t pid, char* path_ptr)
 
 
 /* Sends message/event to userspace over socket. */
-kern_return_t send_to_userspace(char* path, char* procpath, uint32_t mode)
+kern_return_t send_to_userspace(char* path, uint32_t pid, char* procpath,uint32_t ppid, uint32_t mode)
 {
     kern_space_info_message kern_info_m = {0};
     snprintf(kern_info_m.message, sizeof(kern_info_m.message) - 4, "%s;%s;", procpath, path);
     kern_info_m.mode = mode;
+    kern_info_m.pid = pid;
+    kern_info_m.ppid = ppid;
     kern_info_m.signed_bin = SIGNED;
     queue_userland_data(&kern_info_m);
     return KERN_SUCCESS;

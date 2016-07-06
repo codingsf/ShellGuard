@@ -79,7 +79,7 @@ class KextCommunicator {
     
     let logger = Logger.sharedInstance
 
-    @objc func receiveMessageFromKext(_ message: String, mode: Int) {
+    @objc func receiveMessageFromKext(_ message: String, mode: Int, pid: Int, ppid: Int) {
         //print("Message: \(message)")
         let message_parts = message.components(separatedBy: ";")
         guard message_parts.count == 3 else {
@@ -88,18 +88,18 @@ class KextCommunicator {
         }
         switch (Int32(mode)) {
             case ENFORCING:
-                print("[!!] \(message_parts[PROCNAME]) tried to execute \(message_parts[SHELL]). ShellGuard blocked this.")
+                print("[!!] \(message_parts[PROCNAME]) (\(ppid)) tried to execute \(message_parts[SHELL]) (\(pid)). ShellGuard blocked this.")
                 break
             case COMPLAINING:
-                print("[!]  \(message_parts[PROCNAME]) tried to execute \(message_parts[SHELL]). ShellGuard just complains.")
+                print("[!]  \(message_parts[PROCNAME]) (\(ppid)) tried to execute \(message_parts[SHELL]) (\(pid)). ShellGuard just complains.")
                 break
             default:
                 return
         }
-        spawnNotification(message_parts, mode: mode);
+        spawnNotification(message_parts, mode: mode, pid: pid, ppid: ppid);
     }
     
-    func spawnNotification(_ m: [String], mode: Int) {
+    func spawnNotification(_ m: [String], mode: Int, pid: Int, ppid: Int) {
         var notificationMode: String
         let notification = NSUserNotification()
         notification.title = "ShellGuard"
@@ -114,7 +114,7 @@ class KextCommunicator {
             default:
                 return
         }
-        message = "\(notificationMode) \(m[PROCNAME]) executing \(m[SHELL]). \(m[PROCNAME]) may be malicious."
+        message = "\(notificationMode) \(m[PROCNAME]) (\(ppid)) executing \(m[SHELL]) (\(pid)). \(m[PROCNAME]) (\(ppid)) may be malicious."
         notification.informativeText = message
         notification.soundName = nil
         NSUserNotificationCenter.default().deliver(notification)

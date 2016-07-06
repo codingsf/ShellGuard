@@ -34,6 +34,8 @@ typedef struct  {
 typedef struct {
     uint32_t    mode;
     uint32_t    signed_bin;
+    uint32_t    pid;
+    uint32_t    ppid;
     char        message[1024];
 } kern_space_info_message;
 
